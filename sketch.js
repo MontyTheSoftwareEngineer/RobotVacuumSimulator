@@ -128,6 +128,8 @@ function draw() {
       }
       if ( !checkRoomCollision( roomA, roomB ) ) {
         roomA.finishShift()
+        roomA = null;
+        roomB = null;
         currentState = "findCollidingRooms"
       }
 
