@@ -1,5 +1,6 @@
 class Room {
-    constructor(x, y, width, height, maxIndex, r, g, b) {
+    constructor(roomIndex, x, y, width, height, cellWidth, maxIndex, r, g, b) {
+        this.roomIndex = roomIndex;
         this.cells = [];
         this.x = x;
         this.y = y;
@@ -8,6 +9,7 @@ class Room {
         this.r = r;
         this.g = g;
         this.b = b;
+        this.cellWidth = cellWidth
         this.maxIndex = maxIndex
         this.shiftDirection = -1;
     }
@@ -36,6 +38,18 @@ class Room {
 
         this.cells = []
     }
+
+    labelRoom() {
+        // Calculate the position to draw the text centered in the room
+        let textX = Math.floor((this.x + this.width / 2) * cellWidth);
+        let textY = Math.floor((this.y + this.height / 2) * cellWidth);
+      
+        fill(0);
+        textSize(25);
+        textAlign(CENTER, CENTER);
+        text("Room " + parseInt( this.roomIndex ), textX, textY); 
+      }
+      
 
     fillCells() {
         this.cells = []

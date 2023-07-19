@@ -66,7 +66,7 @@ function mrr() {
   let newB = Math.floor( random( 0, 255 ) )
   let newG = Math.floor( random( 0, 255 ) )
 
-  let room = new Room( roomX, roomY, roomWidth, roomHeight, maxIndex, newR, newG, newB );
+  let room = new Room( rooms.length + 1, roomX, roomY, roomWidth, roomHeight, cellWidth, maxIndex, newR, newG, newB );
   room.fillCells()
 
   rooms.push( room );
@@ -98,6 +98,15 @@ function separateRooms() {
         return;
       }
     }
+  }
+
+  currentState = "labelRooms";
+}
+
+function labelRooms() {
+  for( let roomIndex = 0; roomIndex < rooms.length; roomIndex++ )
+  {
+    rooms[roomIndex].labelRoom()
   }
 }
 
@@ -134,6 +143,9 @@ function draw() {
       }
 
       break;
+    }
+    case "labelRooms": {
+      labelRooms();
     }
 
   }
