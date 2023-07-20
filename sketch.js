@@ -89,6 +89,10 @@ function draw() {
       checkOrphanedRooms();
       break;
     }
+    case "checkIslands": {
+      checkIslands();
+      break;
+    }
   }
 
   for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
