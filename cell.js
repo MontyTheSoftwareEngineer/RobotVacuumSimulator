@@ -20,7 +20,8 @@ class Cell {
     this.i = i;
     this.j = j;
     this.cellWidth = cellWidth;
-    this.walls = [false, false, false, false];
+    this.inRoom = false; //use this for a light stroke for squares in a room
+    this.walls = [false, false, false, false]; //top,right,bot,left
     this.r = 22;
     this.g = 22;
     this.b = 22;
@@ -59,7 +60,16 @@ class Cell {
     let x = this.i * this.cellWidth;
     let y = this.j * this.cellWidth;
 
-    stroke(0);
+    stroke(1);
+    strokeWeight(0.5);
+    if (this.inRoom) {
+      line(x, y, x + this.cellWidth, y);
+      line(x + this.cellWidth, y, x + this.cellWidth, y + this.cellWidth);
+      line(x + this.cellWidth, y + this.cellWidth, x, y + this.cellWidth);
+      line(x, y + this.cellWidth, x, y);
+    }
+
+    strokeWeight(4);
     if (this.walls[0]) {
       line(x, y, x + this.cellWidth, y);
     }

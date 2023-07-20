@@ -1,6 +1,6 @@
 let cols, rows, maxIndex;
 const cellWidth = 15;
-const roomCount = 6;
+const roomCount = 4;
 let grid = [];
 let rooms = [];
 
@@ -57,9 +57,9 @@ function draw() {
   frameRate(30);
 
   //draw all cells in the game.
-  for (let cell = 0; cell < grid.length; cell++) {
-    grid[cell].display();
-  }
+  grid.forEach((cell) => {
+    cell.display();
+  });
 
   //state machine
   switch (currentState) {
@@ -100,9 +100,13 @@ function draw() {
       centerMap();
       break;
     }
+    case "createWallsAndDoors": {
+      createWallsAndDoors();
+      break;
+    }
   }
 
-  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
-    rooms[roomCount].labelRoom();
-  }
+  rooms.forEach((room) => {
+    room.labelRoom();
+  });
 }

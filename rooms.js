@@ -72,6 +72,58 @@ class Room {
   }
 
   /**
+   * @brief Returns an array of cells that form the top of the room
+   */
+  getTopEdge() {
+    let ret = [];
+
+    for (let i = 0; i < this.width; i++) {
+      ret.push(index(this.x, this.y) + i);
+    }
+
+    return ret;
+  }
+
+  /**
+   * @brief Returns an array of cells that form the left of the room
+   */
+  getLeftEdge() {
+    let ret = [];
+
+    for (let i = 0; i < this.height; i++) {
+      ret.push(index(this.x, this.y) + i * cols);
+    }
+
+    return ret;
+  }
+
+  /**
+   * @brief Returns an array of cells that form the right of the room
+   */
+  getRightEdge() {
+    let ret = [];
+
+    for (let i = 0; i < this.height; i++) {
+      ret.push(index(this.x, this.y) + i * cols + (this.width - 1));
+    }
+
+    return ret;
+  }
+
+  /**
+   * @brief Returns an array of cells that form the bottom of the room
+   */
+  getBottomEdge() {
+    let ret = [];
+
+    for (let i = 0; i < this.width; i++) {
+      ret.push(index(this.x, this.y) + i + (this.height - 1) * cols);
+    }
+
+    return ret;
+  }
+
+  /**
    * @brief Returns an array of cells that are on the outer rim of the room.
    *
    * @return Array of cells that are on the outer rim.
@@ -101,7 +153,7 @@ class Room {
   clearCells() {
     for (let i = 0; i < this.cells.length; i++) {
       grid[this.cells[i]].setRGB(22, 22, 22);
-      grid[this.cells[i]].setWalls(false);
+      grid[this.cells[i]].inRoom = false;
     }
 
     this.cells = [];
@@ -134,7 +186,7 @@ class Room {
           let cell = grid[cellIndex];
           this.cells.push(cellIndex);
           cell.setRGB(this.r, this.g, this.b, 255);
-          cell.setWalls(true);
+          cell.inRoom = true;
         }
       }
     }

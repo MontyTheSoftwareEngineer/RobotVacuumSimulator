@@ -230,6 +230,10 @@ function checkIslands() {
   }
 }
 
+/**
+ * @brief Centers the map onto screen
+ *
+ */
 function centerMap() {
   let leftMost = 10000;
   let rightMost = 0;
@@ -302,5 +306,37 @@ function centerMap() {
   rooms.forEach((room) => {
     room.fillCells();
   });
-  currentState = "test";
+  currentState = "createWallsAndDoors";
+}
+
+/**
+ * @brief Creates walls and doors for the map
+ *
+ */
+function createWallsAndDoors() {
+  rooms.forEach((room) => {
+    //top
+    let topEdge = room.getTopEdge();
+    topEdge.forEach((cell) => {
+      grid[cell].walls = [true, false, false, false];
+    });
+
+    //right
+    let rightEdge = room.getRightEdge();
+    rightEdge.forEach((cell) => {
+      grid[cell].walls[1] = true;
+    });
+
+    //bottom
+    let bottomEdge = room.getBottomEdge();
+    bottomEdge.forEach((cell) => {
+      grid[cell].walls[2] = true;
+    });
+
+    //left
+    let leftEdge = room.getLeftEdge();
+    leftEdge.forEach((cell) => {
+      grid[cell].walls[3] = true;
+    });
+  });
 }
