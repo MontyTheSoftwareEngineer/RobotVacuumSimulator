@@ -1,5 +1,6 @@
 let cols, rows, maxIndex;
-const cellWidth = 12;
+const cellWidth = 15;
+const roomCount = 5;
 let grid = [];
 let rooms = [];
 
@@ -15,8 +16,8 @@ function setup() {
   currentCanvasHeight = windowHeight;
 
   //cols and rows depend on canvas size
-  cols = floor(width / cellWidth);
-  rows = floor(height / cellWidth);
+  cols = floor(currentCanvasWidth / cellWidth);
+  rows = floor(currentCanvasHeight / cellWidth);
 
   console.log("Cols: ", cols, " Rows: ", rows);
 
@@ -53,7 +54,7 @@ function mouseClicked() {
 
 function draw() {
   background(220);
-  frameRate(15);
+  frameRate(24);
 
   //draw all cells in the game.
   for (let cell = 0; cell < grid.length; cell++) {
@@ -64,7 +65,7 @@ function draw() {
   switch (currentState) {
     case "creatingRooms": {
       MakeRandomRoom();
-      if (rooms.length >= 5) currentState = "findCollidingRooms";
+      if (rooms.length >= roomCount) currentState = "findCollidingRooms";
       break;
     }
     case "findCollidingRooms": {
@@ -91,6 +92,10 @@ function draw() {
     }
     case "checkIslands": {
       checkIslands();
+      break;
+    }
+    case "centerRooms": {
+      centerMap();
       break;
     }
   }

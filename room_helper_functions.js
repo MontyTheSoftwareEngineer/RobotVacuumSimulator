@@ -22,7 +22,7 @@ function MakeRandomRoom() {
   let newG = Math.floor(random(0, 255));
 
   let room = new Room(
-    rooms.length,
+    rooms.length + 1,
     roomX,
     roomY,
     roomWidth,
@@ -228,4 +228,79 @@ function checkIslands() {
     console.log("No island clusters found!");
     currentState = "centerRooms";
   }
+}
+
+function centerMap() {
+  let leftMost = 10000;
+  let rightMost = 0;
+  let topMost = 10000;
+  let bottMost = 0;
+
+  //find left,right, top, bot bounds of map
+  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+    if (rooms[roomCount].x < leftMost) leftMost = rooms[roomCount].x;
+
+    if (rooms[roomCount].x + rooms[roomCount].width > rightMost)
+      rightMost = rooms[roomCount].x + rooms[roomCount].width;
+
+    if (rooms[roomCount].y + rooms[roomCount].height > bottMost)
+      bottMost = rooms[roomCount].y + rooms[roomCount].height;
+
+    if (rooms[roomCount].y < topMost) topMost = rooms[roomCount].y;
+  }
+
+  console.log("Canvas:", cols, rows);
+  console.log("Centering map", leftMost, rightMost, topMost, bottMost);
+
+  let mapWidth = rightMost - leftMost;
+  console.log("Map width: ", mapWidth);
+  let mapHeight = bottMost - topMost;
+  console.log("Map Height: ", mapHeight);
+  let nominalXStart, nominalYStart;
+
+  //calculate where the left most *should* start
+  if (mapWidth < cols) {
+    nominalXStart = Math.floor((cols - mapWidth) / 2);
+    console.log("nominalXStart: ", nominalXStart);
+  } else {
+    //TODO: resize canvas width
+    return;
+  }
+
+  //calculate where the topb most *should* start
+  if (mapHeight < rows) {
+    nominalYStart = Math.floor((rows - mapHeight) / 2);
+    console.log("nominalYStart: ", nominalYStart);
+  } else {
+    //TODO: resize canvas Height
+    return;
+  }
+
+  //how much we should move the X by (absolute)
+  let xShiftFactor = Math.abs(leftMost - nominalXStart);
+
+  //how much we should move the y by (absolute)
+  let yShiftFactor = Math.abs(topMost - nominalYStart);
+
+  //if we should be shifting left/right
+  //if our leftMost pos is greater than xStart, we should shift left
+  if (leftMost > nominalXStart) xShiftFactor = -xShiftFactor;
+
+  //if we should be shifting up/down
+  //if our topMost pos is greater than yStart, we should shift up
+  if (topMost > nominalYStart) yShiftFactor = -yShiftFactor;
+
+  console.log("X Shift Factor: ", xShiftFactor);
+  console.log("Y Shift Factor: ", yShiftFactor);
+
+  console.log("Moving X " + (xShiftFactor > 0 ? "Right" : "Left"));
+  console.log("Moving Y " + (yShiftFactor > 0 ? "Down" : "Up"));
+
+  rooms.forEach((room) => {
+    room.teleportRoom(room.x + xShiftFactor, room.y + yShiftFactor);
+  });
+  rooms.forEach((room) => {
+    room.fillCells();
+  });
+  currentState = "test";
 }
