@@ -98,7 +98,7 @@ function separateRooms() {
  */
 function checkOrphanedRooms() {
   for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
-    console.log("Root room check: ", rooms[roomCount].roomIndex);
+    //console.log("Root room check: ", rooms[roomCount].roomIndex);
     let roomEdges = rooms[roomCount].getRimCells();
     //console.log("This room edges: ", roomEdges);
     let neighboringCells = [];
@@ -116,7 +116,7 @@ function checkOrphanedRooms() {
       otherRoomCount < rooms.length;
       otherRoomCount++
     ) {
-      console.log("Checking against: ", rooms[otherRoomCount].roomIndex);
+      //console.log("Checking against: ", rooms[otherRoomCount].roomIndex);
       if (otherRoomCount !== roomCount && rooms[otherRoomCount]) {
         let otherRoomEdges = rooms[otherRoomCount].getRimCells();
         hasNeighbor = neighboringCells.some((element) =>
@@ -124,7 +124,6 @@ function checkOrphanedRooms() {
         );
 
         if (hasNeighbor) {
-          console.log("NEIGHBORS");
           break;
         }
       }
@@ -144,5 +143,63 @@ function checkOrphanedRooms() {
   }
 
   console.log("No orphaned rooms!");
-  currentState = "c";
+  currentState = "checkIslands";
+}
+
+function checkIslands() {
+  console.log("Checking for islands");
+  let unvisitedRooms = [];
+  let nextRoomsToCheck = [];
+
+  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+    unvisitedRooms.push(roomCount);
+  }
+  nextRoomsToCheck.push(0);
+
+  while (nextRoomsToCheck.length > 0) {
+    let currentCheckingRoom = nextRoomsToCheck[0];
+    console.log("Checking room: ", currentCheckingRoom + 1);
+    unvisitedRooms.splice(unvisitedRooms.indexOf(currentCheckingRoom), 1);
+    nextRoomsToCheck.splice(0, 1);
+    console.log("rooms left:", unvisitedRooms);
+    console.log("rooms in check queue:", nextRoomsToCheck);
+
+    let roomEdges = rooms[0].getRimCells();
+    let neighboringCells = [];
+    for (let edgeCount = 0; edgeCount < roomEdges.length; edgeCount++) {
+      neighboringCells = neighboringCells.concat(
+        getNeighboringCellIndexes(roomEdges[edgeCount])
+      );
+    }
+
+    let hasNeighbor = false;
+    for (
+      let otherRoomCount = 0;
+      otherRoomCount < rooms.length;
+      otherRoomCount++
+    ) {
+      if (
+        otherRoomCount !== currentCheckingRoom &&
+        unvisitedRooms.includes(otherRoomCount)
+      ) {
+        let otherRoomEdges = rooms[otherRoomCount].getRimCells();
+        hasNeighbor = neighboringCells.some((element) =>
+          otherRoomEdges.includes(element)
+        );
+
+        if (
+          hasNeighbor &&
+          !nextRoomsToCheck.includes(otherRoomCount) &&
+          unvisitedRooms.includes(otherRoomCount)
+        ) {
+          console.log("Found neighbor: ", otherRoomCount + 1);
+          nextRoomsToCheck.push(otherRoomCount);
+          console.log("Next rooms to check: ", nextRoomsToCheck);
+        }
+      }
+    }
+  }
+
+  console.log("Islands: ", unvisitedRooms);
+  currentState = "s";
 }
