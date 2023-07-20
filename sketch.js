@@ -6,28 +6,19 @@ let rooms = [];
 let currentState = "creatingRooms";
 let roomA, roomB;
 
-/**
- * @brief Helper function that calculates the index of a 2D array element based
- * on its row and column position.
- *
- * @param i The row index of the element (starting from 0).
- * @param j The column index of the element (starting from 0).
- * @return The index of the element if i and j are within valid bounds, otherwise -1.
- */
-function index(i, j) {
-  if (i < 0 || j < 0 || i > cols - 1 || j > rows - 1) {
-    return -1;
-  }
-  return i + j * cols;
-}
+let currentCanvasWidth, currentCanvasHeight;
 
 function setup() {
   //setup canvas to fill screen
   createCanvas(windowWidth, windowHeight);
+  currentCanvasWidth = windowWidth;
+  currentCanvasHeight = windowHeight;
 
   //cols and rows depend on canvas size
   cols = floor(width / cellWidth);
   rows = floor(height / cellWidth);
+
+  console.log("Cols: ", cols, " Rows: ", rows);
 
   //create all cell objects representing game map
   for (let j = 0; j < rows; j++) {
@@ -60,104 +51,6 @@ function mouseClicked() {
   clickedCell.setRGB(newR, newG, newB);
 }
 
-/**
- * @brief Helper function that creates a random room and adds it to rooms array.
- * We return at the end of this in order to give the game a more step-through animation look.
- */
-function MakeRandomRoom() {
-  let roomWidth = Math.floor(random(12, 20));
-  let roomHeight = Math.floor(random(12, 20));
-
-  let roomX = Math.floor(cols / 2);
-  let roomY = Math.floor(rows / 2);
-
-  let newR = Math.floor(random(0, 255));
-  let newB = Math.floor(random(0, 255));
-  let newG = Math.floor(random(0, 255));
-
-  let room = new Room(
-    rooms.length + 1,
-    roomX,
-    roomY,
-    roomWidth,
-    roomHeight,
-    cellWidth,
-    maxIndex,
-    newR,
-    newG,
-    newB
-  );
-  room.fillCells();
-
-  rooms.push(room);
-  return;
-}
-
-/**
- * @brief Helper function that checks if two rooms collide.
- *
- * @param firstRoom The first room object to check for collision.
- * @param secondRoom The second room object to check for collision.
- * @return Returns true if there is a collision between the two rooms, else returns false.
- */
-function checkRoomCollision(firstRoom, secondRoom) {
-  for (let cellIndex = 0; cellIndex < firstRoom.cells.length; cellIndex++) {
-    let cell = grid[firstRoom.cells[cellIndex]];
-
-    if (secondRoom.checkHasCell(firstRoom.cells[cellIndex])) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * @brief Separates the rooms to ensure they do not collide with each other.
- * We return at the end of this in order to give the game a more step-through animation look.
- *
- * @note if no rooms collide, set the state machine to the next state, which is labeling the rooms.
- */
-function separateRooms() {
-  for (let roomIndex = 0; roomIndex < rooms.length - 1; roomIndex++) {
-    roomA = rooms[roomIndex];
-    for (
-      let nextRoomIndex = roomIndex + 1;
-      nextRoomIndex < rooms.length;
-      nextRoomIndex++
-    ) {
-      roomB = rooms[nextRoomIndex];
-      if (checkRoomCollision(roomA, roomB)) {
-        currentState = "separatingRooms";
-        return;
-      }
-    }
-  }
-
-  currentState = "labelRooms";
-}
-
-/**
- * @brief Call each rooms label function in order to draw their labels.
- */
-function labelRooms() {
-  for (let roomIndex = 0; roomIndex < rooms.length; roomIndex++) {
-    rooms[roomIndex].labelRoom();
-  }
-  currentState = "colorRims";
-}
-
-/**
- * @brief Call each rooms get rim function to color the rim
- */
-function colorRims() {
-  for (let roomIndex = 0; roomIndex < rooms.length; roomIndex++) {
-    for (let i of rooms[roomIndex].getRimCells()) {
-      grid[i].setRGB(0, 0, 0);
-    }
-  }
-}
-
 function draw() {
   background(220);
   frameRate(15);
@@ -171,7 +64,7 @@ function draw() {
   switch (currentState) {
     case "creatingRooms": {
       MakeRandomRoom();
-      if (rooms.length >= 4) currentState = "findCollidingRooms";
+      if (rooms.length >= 5) currentState = "findCollidingRooms";
       break;
     }
     case "findCollidingRooms": {
@@ -192,11 +85,13 @@ function draw() {
 
       break;
     }
-    case "labelRooms": {
-      labelRooms();
+    case "checkOrphanedRooms": {
+      checkOrphanedRooms();
+      break;
     }
-    case "colorRims": {
-      colorRims();
-    }
+  }
+
+  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+    rooms[roomCount].labelRoom();
   }
 }

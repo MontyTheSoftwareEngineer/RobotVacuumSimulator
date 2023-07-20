@@ -138,6 +138,17 @@ class Room {
         }
       }
     }
+    this.labelRoom();
+  }
+
+  /**
+   * @brief Moves room to a specified x,y location.
+   */
+  teleportRoom(x, y) {
+    this.x = x;
+    this.y = y;
+    this.clearCells();
+    this.fillCells();
   }
 
   /**

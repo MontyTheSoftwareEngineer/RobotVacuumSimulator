@@ -76,5 +76,12 @@ class Cell {
     noStroke();
     fill(this.r, this.g, this.b, 100);
     rect(x, y, this.cellWidth, this.cellWidth);
+
+    // let gridNum = index(this.i, this.j);
+
+    // fill(0, 0, 0, 255);
+    // textSize(12);
+    // textAlign(CENTER, CENTER);
+    // text(gridNum, x + this.cellWidth / 2, y + this.cellWidth / 2);
   }
 }
