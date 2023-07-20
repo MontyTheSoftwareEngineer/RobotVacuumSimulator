@@ -1,6 +1,7 @@
 let cols, rows, maxIndex;
 const cellWidth = 15;
 const roomCount = 5;
+const animateMapCreation = false;
 let grid = [];
 let rooms = [];
 
@@ -54,7 +55,7 @@ function mouseClicked() {
 
 function draw() {
   background(220);
-  frameRate(24);
+  frameRate(60);
 
   //draw all cells in the game.
   for (let cell = 0; cell < grid.length; cell++) {
