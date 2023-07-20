@@ -1,7 +1,6 @@
 let cols, rows, maxIndex;
 const cellWidth = 15;
-const roomCount = 5;
-const animateMapCreation = false;
+const roomCount = 6;
 let grid = [];
 let rooms = [];
 
@@ -55,7 +54,7 @@ function mouseClicked() {
 
 function draw() {
   background(220);
-  frameRate(60);
+  frameRate(30);
 
   //draw all cells in the game.
   for (let cell = 0; cell < grid.length; cell++) {
@@ -74,7 +73,9 @@ function draw() {
       break;
     }
     case "separatingRooms": {
-      roomA.shift();
+      while (checkRoomCollision(roomA, roomB)) {
+        roomA.shift();
+      }
       for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
         rooms[roomCount].fillCells();
       }
