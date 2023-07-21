@@ -310,33 +310,266 @@ function centerMap() {
 }
 
 /**
+ * @brief Closes corners of rooms if it leads out to empty world
+ *
+ */
+function closeCorners(roomIndex) {
+  let currentRoom = rooms[roomIndex];
+  let roomCorners = [];
+
+  //add topLeft Corner
+  roomCorners.push(index(currentRoom.x, currentRoom.y));
+
+  // //add topRightCorner
+  roomCorners.push(
+    index(currentRoom.x, currentRoom.y) + (currentRoom.width - 1)
+  );
+
+  //add bottomRightCorner
+  roomCorners.push(
+    index(
+      currentRoom.x + currentRoom.width - 1,
+      currentRoom.y + currentRoom.height - 1
+    )
+  );
+
+  //add bottomLeft Corner
+  roomCorners.push(
+    index(currentRoom.x, currentRoom.y + currentRoom.height - 1)
+  );
+
+  roomCorners.forEach((cell) => {
+    for (let dir = 0; dir < 4; dir++) {
+      let checkCell;
+      switch (dir) {
+        case 0:
+          checkCell = cell - cols;
+          break;
+        case 1:
+          checkCell = cell + 1;
+          break;
+        case 2:
+          checkCell = cell + cols;
+          break;
+        case 3:
+          checkCell = cell - 1;
+          break;
+      }
+
+      let emptyCell = true;
+      if (checkCell > 0 && checkCell < maxIndex) {
+        rooms.forEach((room) => {
+          if (room.checkHasCell(checkCell) && room.roomIndex) emptyCell = false;
+        });
+      }
+
+      if (emptyCell) {
+        grid[cell].walls[dir] = true;
+      }
+    }
+  });
+}
+
+/**
+ * @brief Re-usable function required by createWallsAndDoors.
+ *
+ * Takes an input array of shared cells, creates a random door, then creates walls for all non-door shared cells.
+ *
+ * @param sharedCells input array of shared cells between two rooms.
+ * @param wallDir direction walls should be created. 1 = top, 2 = right, 3 = bottom, 4 = left
+ * @param visited array of cells already visited and created entry points for to prevent creating walls on previously created doors.
+ * @param roomA roomIndex of the current room.
+ * @param roomB roomIndex of the current room we're checking against.
+ * @param roomConnectionsCompleted Array containing pairs of rooms (low, high) so that we only create 1 entry point per room pair.
+ *
+ * @note Visited and roomConnectionsCompleted are arrays that we expect to be passed by reference
+ * so that we can directly modify the contents.
+ *
+ */
+function createEntryFromShared(
+  sharedCells,
+  wallDir,
+  visited,
+  roomA,
+  roomB,
+  roomConnectionsCompleted
+) {
+  if (sharedCells.length > 0) {
+    //make sure there are actually shared cells.
+    let randomDoor =
+      sharedCells[Math.floor(Math.random() * sharedCells.length)]; //Pick a random cell amongst shared cells and choose it as the door
+
+    let entryPairCell;
+
+    //depending on the direction the walls are being created, we need to ensure that the
+    //other side of the entry point we create does not get a wall created on it.
+    switch (wallDir) {
+      case 0: //top
+        entryPairCell = randomDoor - cols;
+        break;
+      case 1:
+        entryPairCell = randomDoor + 1;
+        break;
+      case 2:
+        entryPairCell = randomDoor + cols;
+        break;
+      case 3:
+        entryPairCell = randomDoor - 1;
+        break;
+    }
+
+    //this check is to make sure the other side of a create entry
+    //is actually within a room. For corner cases, sometimes doors are made
+    //that lead outside of the map, so we want to ensure the entry pair cell
+    //is actually valid (inside map)
+    let isValidEntryPair = false;
+    rooms.forEach((room) => {
+      if (room.getRimCells().includes(entryPairCell)) isValidEntryPair = true;
+    });
+
+    if (isValidEntryPair) {
+      //track which room pairs we've created entries for so that we limit the number
+      //of entries to 1
+      let lowerRoomNum = roomA < roomB ? roomA : roomB;
+      let upperRoomNum = roomA < roomB ? roomB : roomA;
+      roomConnectionsCompleted.push([lowerRoomNum, upperRoomNum]);
+
+      visited.push(randomDoor);
+      visited.push(entryPairCell);
+
+      grid[entryPairCell].walls = [false, false, false, false];
+
+      sharedCells.forEach((targetCell) => {
+        if (targetCell !== randomDoor && !visited.includes(targetCell)) {
+          grid[targetCell].walls[wallDir] = true;
+        }
+      });
+    }
+  }
+}
+
+/**
  * @brief Creates walls and doors for the map
  *
  */
 function createWallsAndDoors() {
-  rooms.forEach((room) => {
+  let found = false;
+
+  let visited = [];
+  let roomConnectionsCompleted = [];
+  for (let currentRoom = 0; currentRoom < rooms.length; currentRoom++) {
+    let room = rooms[currentRoom];
     //top
+    let neighborCells = [];
     let topEdge = room.getTopEdge();
+    let neighboringTop = [];
     topEdge.forEach((cell) => {
-      grid[cell].walls = [true, false, false, false];
+      if (!visited.includes(cell)) grid[cell].walls[0] = true;
+      neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
     //right
     let rightEdge = room.getRightEdge();
+    let neighboringRight = [];
     rightEdge.forEach((cell) => {
-      grid[cell].walls[1] = true;
+      if (!visited.includes(cell)) grid[cell].walls[1] = true;
+      neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
     //bottom
     let bottomEdge = room.getBottomEdge();
+    let neighboringBottom = [];
     bottomEdge.forEach((cell) => {
-      grid[cell].walls[2] = true;
+      if (!visited.includes(cell)) grid[cell].walls[2] = true;
+      neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
     //left
     let leftEdge = room.getLeftEdge();
+    let neighboringLeft = [];
     leftEdge.forEach((cell) => {
-      grid[cell].walls[3] = true;
+      if (!visited.includes(cell)) grid[cell].walls[3] = true;
+      neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
-  });
+
+    for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+      if (rooms[roomCount].roomIndex !== room.roomIndex) {
+        let lowerCheckRoomNum =
+          currentRoom < roomCount ? currentRoom : roomCount;
+        let upperCheckRoomNum =
+          currentRoom < roomCount ? roomCount : currentRoom;
+
+        if (
+          roomConnectionsCompleted.includes([
+            lowerCheckRoomNum,
+            upperCheckRoomNum,
+          ])
+        )
+          continue;
+
+        let sharedCells = [];
+        let otherRoom = rooms[roomCount];
+        let otherRoomTop = otherRoom.getTopEdge();
+        let otherRoomRight = otherRoom.getRightEdge();
+        let otherRoomLeft = otherRoom.getLeftEdge();
+        let otherRoomBottom = otherRoom.getBottomEdge();
+
+        otherRoomTop.forEach((cell) => {
+          if (neighborCells.includes(cell)) sharedCells.push(cell);
+        });
+        createEntryFromShared(
+          sharedCells,
+          0,
+          visited,
+          currentRoom,
+          otherRoom,
+          roomConnectionsCompleted
+        );
+        sharedCells = [];
+
+        otherRoomRight.forEach((cell) => {
+          if (neighborCells.includes(cell)) sharedCells.push(cell);
+        });
+        createEntryFromShared(
+          sharedCells,
+          1,
+          visited,
+          currentRoom,
+          otherRoom,
+          roomConnectionsCompleted
+        );
+        sharedCells = [];
+
+        otherRoomBottom.forEach((cell) => {
+          if (neighborCells.includes(cell)) sharedCells.push(cell);
+        });
+        createEntryFromShared(
+          sharedCells,
+          2,
+          visited,
+          currentRoom,
+          otherRoom,
+          roomConnectionsCompleted
+        );
+        sharedCells = [];
+
+        otherRoomLeft.forEach((cell) => {
+          if (neighborCells.includes(cell)) sharedCells.push(cell);
+        });
+        createEntryFromShared(
+          sharedCells,
+          3,
+          visited,
+          currentRoom,
+          otherRoom,
+          roomConnectionsCompleted
+        );
+        sharedCells = [];
+      }
+    }
+
+    closeCorners(currentRoom);
+  }
+
+  currentState = "test";
 }
