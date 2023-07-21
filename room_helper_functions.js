@@ -582,8 +582,10 @@ function createWallsAndDoors() {
         sharedCells = [];
       }
     }
+  }
 
-    closeCorners(currentRoom);
+  for (let roomIndex = 0; roomIndex < rooms.length; roomIndex++) {
+    closeCorners(roomIndex);
   }
 
   currentState = "test";
