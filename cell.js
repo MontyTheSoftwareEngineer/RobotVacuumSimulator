@@ -25,6 +25,7 @@ class Cell {
     this.r = 22;
     this.g = 22;
     this.b = 22;
+    this.text = "";
   }
 
   /**
@@ -89,9 +90,9 @@ class Cell {
 
     // let gridNum = index(this.i, this.j);
 
-    // fill(0, 0, 0, 255);
-    // textSize(12);
-    // textAlign(CENTER, CENTER);
-    // text(gridNum, x + this.cellWidth / 2, y + this.cellWidth / 2);
+    fill(0, 0, 0, 255);
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    text(this.text, x + this.cellWidth / 2, y + this.cellWidth / 2);
   }
 }

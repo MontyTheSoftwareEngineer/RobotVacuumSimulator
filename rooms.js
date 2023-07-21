@@ -72,6 +72,30 @@ class Room {
   }
 
   /**
+   * @brief Checks to see if a particular cell index is a corner of this room
+   *
+   * @param index The index of the cell in interest
+   *
+   * @returns true if a corner, otherwise false.
+   */
+  checkIsCorner(index) {
+    let corners = [];
+    //topleft
+    corners.push(index(this.x, this.y));
+
+    //topRight
+    corners.push(index(this.x, this.y) + (this.width - 1));
+
+    //bottomRight
+    corners.push(index(this.x + this.width - 1, this.y + this.height - 1));
+
+    //bottomLeft:
+    corners.push(index(this.x, this.y + this.height - 1));
+
+    return corners.includes(index);
+  }
+
+  /**
    * @brief Returns an array of cells that form the top of the room
    */
   getTopEdge() {

@@ -314,6 +314,7 @@ function centerMap() {
  *
  */
 function closeCorners(roomIndex) {
+  console.log("Closing corners on roomIndex: ", roomIndex);
   let currentRoom = rooms[roomIndex];
   let roomCorners = [];
 
@@ -339,7 +340,9 @@ function closeCorners(roomIndex) {
   );
 
   roomCorners.forEach((cell) => {
+    console.log("Next Corner");
     for (let dir = 0; dir < 4; dir++) {
+      console.log("Checking dir: ", dir);
       let checkCell;
       switch (dir) {
         case 0:
@@ -364,6 +367,7 @@ function closeCorners(roomIndex) {
       }
 
       if (emptyCell) {
+        console.log("Found empty! ");
         grid[cell].walls[dir] = true;
       }
     }
@@ -433,11 +437,20 @@ function createEntryFromShared(
       let lowerRoomNum = roomA < roomB ? roomA : roomB;
       let upperRoomNum = roomA < roomB ? roomB : roomA;
       roomConnectionsCompleted.push([lowerRoomNum, upperRoomNum]);
+      // let r = Math.floor(Math.random() * 255);
+      // let g = Math.floor(Math.random() * 255);
+      // let b = Math.floor(Math.random() * 255);
 
       visited.push(randomDoor);
       visited.push(entryPairCell);
 
       grid[entryPairCell].walls = [false, false, false, false];
+
+      //debug
+      // grid[randomDoor].setRGB(r, g, b);
+      // grid[randomDoor].text = roomA;
+      // grid[entryPairCell].setRGB(r, g, b);
+      // grid[entryPairCell].text = roomB;
 
       sharedCells.forEach((targetCell) => {
         if (targetCell !== randomDoor && !visited.includes(targetCell)) {
@@ -500,12 +513,14 @@ function createWallsAndDoors() {
           currentRoom < roomCount ? roomCount : currentRoom;
 
         if (
-          roomConnectionsCompleted.includes([
-            lowerCheckRoomNum,
-            upperCheckRoomNum,
-          ])
-        )
+          roomConnectionsCompleted.some(
+            (arr) =>
+              JSON.stringify(arr) ===
+              JSON.stringify([lowerCheckRoomNum, upperCheckRoomNum])
+          )
+        ) {
           continue;
+        }
 
         let sharedCells = [];
         let otherRoom = rooms[roomCount];
@@ -522,7 +537,7 @@ function createWallsAndDoors() {
           0,
           visited,
           currentRoom,
-          otherRoom,
+          roomCount,
           roomConnectionsCompleted
         );
         sharedCells = [];
@@ -535,7 +550,7 @@ function createWallsAndDoors() {
           1,
           visited,
           currentRoom,
-          otherRoom,
+          roomCount,
           roomConnectionsCompleted
         );
         sharedCells = [];
@@ -548,7 +563,7 @@ function createWallsAndDoors() {
           2,
           visited,
           currentRoom,
-          otherRoom,
+          roomCount,
           roomConnectionsCompleted
         );
         sharedCells = [];
@@ -561,7 +576,7 @@ function createWallsAndDoors() {
           3,
           visited,
           currentRoom,
-          otherRoom,
+          roomCount,
           roomConnectionsCompleted
         );
         sharedCells = [];
