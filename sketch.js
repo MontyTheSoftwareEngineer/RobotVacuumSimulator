@@ -13,6 +13,7 @@ let currentCanvasWidth, currentCanvasHeight;
 function setup() {
   //setup canvas to fill screen
   createCanvas(windowWidth, windowHeight);
+  createCan
   currentCanvasWidth = windowWidth;
   currentCanvasHeight = windowHeight;
 
@@ -32,6 +33,28 @@ function setup() {
 
   //calculates max index a cell can be. Anything outside of this is outside the game map.
   maxIndex = rows * cols;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  currentCanvasWidth = windowWidth;
+  currentCanvasHeight = windowHeight;
+  cols = floor(currentCanvasWidth / cellWidth);
+  rows = floor(currentCanvasHeight / cellWidth);
+  maxIndex = rows * cols;
+  grid = [];
+
+  //create all cell objects representing game map
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      let cell = new Cell(i, j, cellWidth);
+      grid.push(cell);
+    }
+  }
+
+  for (room of rooms) {
+    room.fillCells();
+  }
 }
 
 //for future use
@@ -65,8 +88,8 @@ function draw() {
   //state machine
   switch (currentState) {
     case "creatingRooms": {
-      MakeRandomRoom();
       if (rooms.length >= roomCount) currentState = "findCollidingRooms";
+      MakeRandomRoom();
       break;
     }
     case "findCollidingRooms": {
