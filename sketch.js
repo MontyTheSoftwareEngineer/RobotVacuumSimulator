@@ -1,6 +1,6 @@
 let cols, rows, maxIndex;
 const cellWidth = 15;
-const roomCount = 5;
+const roomCount = 4;
 let grid = [];
 let rooms = [];
 

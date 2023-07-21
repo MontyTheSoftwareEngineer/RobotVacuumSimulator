@@ -314,29 +314,117 @@ function centerMap() {
  *
  */
 function createWallsAndDoors() {
-  rooms.forEach((room) => {
+  let found = false;
+
+  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+    console.log("RoomCount:", roomCount);
+    let room = rooms[roomCount];
     //top
     let topEdge = room.getTopEdge();
+    let neighboringTop = [];
     topEdge.forEach((cell) => {
-      grid[cell].walls = [true, false, false, false];
+      grid[cell].walls[0] = true;
+      neighboringTop = neighboringTop.concat(getNeighboringCellIndexes(cell));
     });
 
     //right
     let rightEdge = room.getRightEdge();
+    let neighboringRight = [];
     rightEdge.forEach((cell) => {
       grid[cell].walls[1] = true;
+      neighboringRight = neighboringRight.concat(
+        getNeighboringCellIndexes(cell)
+      );
     });
 
     //bottom
     let bottomEdge = room.getBottomEdge();
+    let neighboringBottom = [];
     bottomEdge.forEach((cell) => {
       grid[cell].walls[2] = true;
+      neighboringBottom = neighboringBottom.concat(
+        getNeighboringCellIndexes(cell)
+      );
     });
 
     //left
     let leftEdge = room.getLeftEdge();
+    let neighboringLeft = [];
     leftEdge.forEach((cell) => {
       grid[cell].walls[3] = true;
+      neighborineighboringLeftngTop = neighboringLeft.concat(
+        getNeighboringCellIndexes(cell)
+      );
     });
-  });
+
+    console.log("Current Room: ", room.roomIndex);
+
+    let sharedCells = [];
+    let sharedDir;
+    for (
+      let otherRoomCount = 0;
+      otherRoomCount < rooms.length;
+      otherRoomCount++
+    ) {
+      if (rooms[otherRoomCount].roomIndex !== room.roomIndex) {
+        let otherRoom = rooms[otherRoomCount];
+        console.log("Checking with room: ", otherRoom.roomIndex);
+        let otherRoomTop = otherRoom.getTopEdge();
+        otherRoomTop.forEach((cell) => {
+          if (neighboringTop.includes(cell)) {
+            sharedCells.push(cell);
+            sharedDir = "top";
+            console.log("TOP");
+          } else if (neighboringRight.includes(cell)) {
+            sharedCells.push(cell);
+            sharedDir = "right";
+            console.log("RIGHT");
+          } else if (neighboringBottom.includes(cell)) {
+            sharedCells.push(cell);
+            sharedDir = "bottom";
+            console.log("BOTTOM");
+          } else if (neighboringLeft.includes(cell)) {
+            sharedCells.push(cell);
+            sharedDir = "left";
+            console.log("LEFT");
+          }
+        });
+
+        if (sharedCells.length > 0) {
+          console.log("SharedDir:", sharedDir);
+          sharedCells.forEach((cell) => {
+            grid[cell].setRGB(0, 0, 0);
+          });
+          found = true;
+          //const doorWay = Math.floor(Math.random() * sharedCells.length);
+          //grid[sharedCells[doorWay]].setRGB(0, 0, 0);
+          //grid[sharedCells[doorWay] + cols].walls = [true, true, true, true];
+
+          currentState = "t";
+          return;
+        }
+      }
+    }
+
+    // rooms.forEach((otherRoom) => {
+    //   if (otherRoom.roomIndex !== room.roomIndex) {
+
+    //     if (sharedCells.length > 0) {
+    //       const doorWay = Math.floor(Math.random() * sharedCells.length);
+    //       grid[sharedCells[doorWay]].setRGB(0, 0, 0);
+    //       //grid[sharedCells[doorWay] + cols].walls = [true, true, true, true];
+
+    //       currentState = "t";
+    //       return;
+    //     }
+    //   }
+    // });
+
+    //console.log("Shared:", sharedCells);
+
+    // if (sharedCells.length > 0) {
+    //   const doorWay = Math.floor(Math.random() * sharedCells.length);
+    //   grid[sharedCells[doorWay]].walls = [true, true, true, true];
+    // }
+  } //for roomCount
 }
