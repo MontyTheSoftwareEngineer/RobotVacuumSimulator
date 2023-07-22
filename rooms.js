@@ -21,13 +21,12 @@ class Room {
    * @param width The width of the room.
    * @param height The height of the room.
    * @param cellWidth The width of each individual cell in the room.
-   * @param maxIndex The maximum index value for the canvas, used to detect when
    * an index is out of range of board so we don't try to fill its color if it doesn't exist.
    * @param r The red component of the room's color.
    * @param g The green component of the room's color.
    * @param b The blue component of the room's color.
    */
-  constructor(roomIndex, x, y, width, height, cellWidth, maxIndex, r, g, b) {
+  constructor(roomIndex, x, y, width, height, cellWidth, r, g, b) {
     this.roomIndex = roomIndex;
     this.cells = [];
     this.x = x;
@@ -38,26 +37,7 @@ class Room {
     this.g = g;
     this.b = b;
     this.cellWidth = cellWidth;
-    this.maxIndex = maxIndex;
     this.shiftDirection = -1;
-  }
-
-  /**
-   * @brief Adds a cell to the room's cell array tracker.
-   *
-   * @param index The index of the cell to be added.
-   */
-  addCell(index) {
-    this.cells.push(index);
-  }
-
-  /**
-   * @brief Returns an array of cells in the room.
-   *
-   * @return array of cells associated with this room.
-   */
-  cells() {
-    return this.cells;
   }
 
   /**
@@ -154,19 +134,10 @@ class Room {
    */
   getRimCells() {
     let rimCells = [];
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        let cellIndex = index(this.x + i, this.y + j);
-        // If the cell index is within range, and it is on one of the boundaries
-        if (
-          cellIndex > 0 &&
-          cellIndex < this.maxIndex &&
-          (i === 0 || i === this.width - 1 || j === 0 || j === this.height - 1)
-        ) {
-          rimCells.push(cellIndex);
-        }
-      }
-    }
+    rimCells = rimCells.concat(this.getTopEdge());
+    rimCells = rimCells.concat(this.getLeftEdge());
+    rimCells = rimCells.concat(this.getRightEdge());
+    rimCells = rimCells.concat(this.getBottomEdge());
     return rimCells;
   }
 
@@ -176,8 +147,7 @@ class Room {
    */
   clearCells() {
     for (let i = 0; i < this.cells.length; i++) {
-      grid[this.cells[i]].setRGB(22, 22, 22);
-      grid[this.cells[i]].inRoom = false;
+      gameMap.removeCell(this.cells[i]);
 
       //debug
       //grid[this.cells[i]].text = "";
@@ -206,19 +176,15 @@ class Room {
    * Also sets the walls.
    */
   fillCells() {
-    this.cells = [];
+    this.clearCells();
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
         let cellIndex = index(this.x + i, this.y + j);
-        if (cellIndex > 0 && cellIndex < this.maxIndex) {
-          let cell = grid[cellIndex];
-          this.cells.push(cellIndex);
-          cell.setRGB(this.r, this.g, this.b, 255);
-          cell.inRoom = true;
-
-          //debug
-          //cell.text = this.roomIndex;
-        }
+        this.cells.push(cellIndex);
+        let newCell = new Cell(this.x + i, this.y + j, cellWidth);
+        newCell.inRoom = true;
+        newCell.setRGB(this.r, this.g, this.b, 255);
+        gameMap.addCell(newCell);
       }
     }
     this.labelRoom();
@@ -250,7 +216,6 @@ class Room {
   shift() {
     if (this.shiftDirection === -1) {
       this.shiftDirection = Math.floor(Math.random() * 4);
-      console.log("Created new direction: ", this.shiftDirection);
     }
     switch (this.shiftDirection) {
       case 0: {
@@ -274,7 +239,6 @@ class Room {
         break;
       }
     }
-    this.clearCells();
     this.fillCells();
   }
 }

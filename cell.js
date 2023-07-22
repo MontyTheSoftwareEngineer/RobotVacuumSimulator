@@ -25,7 +25,7 @@ class Cell {
     this.r = 22;
     this.g = 22;
     this.b = 22;
-    this.text = "";
+    this.text = ""; //for debugging
   }
 
   /**
@@ -89,8 +89,6 @@ class Cell {
       fill(this.r, this.g, this.b, 100);
       rect(x, y, this.cellWidth, this.cellWidth);
     }
-
-    // let gridNum = index(this.i, this.j);
 
     fill(0, 0, 0, 255);
     textSize(12);

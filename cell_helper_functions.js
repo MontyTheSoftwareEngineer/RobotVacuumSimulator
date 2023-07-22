@@ -12,12 +12,9 @@
  *
  * @param i The row index of the element (starting from 0).
  * @param j The column index of the element (starting from 0).
- * @return The index of the element if i and j are within valid bounds, otherwise -1.
+ * @return The 1D index representation of (i,j)
  */
 function index(i, j) {
-  if (i < 0 || j < 0 || i > cols - 1 || j > rows - 1) {
-    return -1;
-  }
   return i + j * cols;
 }
 
@@ -33,7 +30,7 @@ function getNeighboringCellIndexes(inputCellIndex) {
   if (inputCellIndex > 0) neighboringCells.push(inputCellIndex - 1);
 
   //right cell
-  if (inputCellIndex < maxIndex) neighboringCells.push(inputCellIndex + 1);
+  neighboringCells.push(inputCellIndex + 1);
 
   //cell above
   let cellAbove = inputCellIndex - cols;
@@ -41,7 +38,7 @@ function getNeighboringCellIndexes(inputCellIndex) {
 
   //cell above
   let cellBelow = inputCellIndex + cols;
-  if (cellAbove < maxIndex) neighboringCells.push(cellBelow);
+  neighboringCells.push(cellBelow);
 
   return neighboringCells;
 }

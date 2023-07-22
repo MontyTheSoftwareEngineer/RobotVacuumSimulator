@@ -1,8 +1,8 @@
-let cols, rows, maxIndex;
-const cellWidth = 15;
+let cols, rows;
+const cellWidth = 20;
 const roomCount = 6;
 const cameraMan = new CameraMan();
-let grid = [];
+const gameMap = new GameMap();
 let rooms = [];
 
 let currentState = "creatingRooms";
@@ -21,17 +21,6 @@ function setup() {
   rows = floor(currentCanvasHeight / cellWidth);
 
   console.log("Cols: ", cols, " Rows: ", rows);
-
-  //create all cell objects representing game map
-  for (let j = 0; j < rows; j++) {
-    for (let i = 0; i < cols; i++) {
-      let cell = new Cell(i, j, cellWidth);
-      grid.push(cell);
-    }
-  }
-
-  //calculates max index a cell can be. Anything outside of this is outside the game map.
-  maxIndex = rows * cols;
 }
 
 function keyPressed() {
@@ -77,9 +66,7 @@ function draw() {
   cameraMan.newGameTick();
 
   //draw all cells in the game.
-  grid.forEach((cell) => {
-    cell.display();
-  });
+  //gameMap.showMap();
 
   //state machine
   switch (currentState) {
@@ -89,6 +76,7 @@ function draw() {
       break;
     }
     case "findCollidingRooms": {
+      console.log("findColldingRooms");
       separateRooms();
       break;
     }
@@ -125,6 +113,8 @@ function draw() {
       break;
     }
   }
+  //draw all cells in the game.
+  gameMap.showMap();
 
   rooms.forEach((room) => {
     room.labelRoom();
