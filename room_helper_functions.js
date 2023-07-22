@@ -449,9 +449,9 @@ function createEntryFromShared(
       let lowerRoomNum = roomA < roomB ? roomA : roomB;
       let upperRoomNum = roomA < roomB ? roomB : roomA;
       roomConnectionsCompleted.push([lowerRoomNum, upperRoomNum]);
-      let r = Math.floor(Math.random() * 255);
-      let g = Math.floor(Math.random() * 255);
-      let b = Math.floor(Math.random() * 255);
+      // let r = Math.floor(Math.random() * 255);
+      // let g = Math.floor(Math.random() * 255);
+      // let b = Math.floor(Math.random() * 255);
 
       visited.push(randomDoor);
       visited.push(entryPairCell);
@@ -459,10 +459,10 @@ function createEntryFromShared(
       gameMap.grid.get(entryPairCell).walls = [false, false, false, false];
 
       //debug
-      gameMap.grid.get(randomDoor).setRGB(r, g, b);
-      gameMap.grid.get(randomDoor).text = roomA + 1;
-      gameMap.grid.get(entryPairCell).setRGB(r, g, b);
-      gameMap.grid.get(entryPairCell).text = roomB + 1;
+      // gameMap.grid.get(randomDoor).setRGB(r, g, b);
+      // gameMap.grid.get(randomDoor).text = roomA + 1;
+      // gameMap.grid.get(entryPairCell).setRGB(r, g, b);
+      // gameMap.grid.get(entryPairCell).text = roomB + 1;
 
       sharedCells.forEach((targetCell) => {
         if (targetCell !== randomDoor && !visited.includes(targetCell)) {

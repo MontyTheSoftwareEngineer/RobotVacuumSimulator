@@ -41,23 +41,24 @@ function keyReleased() {
 }
 
 // //for future use
-// function mouseClicked() {
-//   // Calculate the cell coordinates based on the mouse position
-//   let cellX = Math.floor(mouseX / cellWidth);
-//   let cellY = Math.floor(mouseY / cellWidth);
+function mouseClicked() {
+  // Calculate the cell coordinates based on the mouse position
+  let cellX = Math.floor((mouseX + cameraMan.x) / cellWidth);
+  let cellY = Math.floor((mouseY + cameraMan.y) / cellWidth);
 
-//   // Get the index of the clicked cell in the grid
-//   let cellIndex = index(cellX, cellY);
+  // Get the index of the clicked cell in the grid
+  let cellIndex = index(cellX, cellY);
 
-//   // Access the cell object from the grid array
-//   let clickedCell = grid[cellIndex];
+  // Access the cell object from the grid array
+  let clickedCell = gameMap.grid.get(cellIndex);
+  if (clickedCell === undefined) return;
 
-//   let newR = Math.floor(random(0, 255));
-//   let newB = Math.floor(random(0, 255));
-//   let newG = Math.floor(random(0, 255));
+  let newR = Math.floor(random(0, 255));
+  let newB = Math.floor(random(0, 255));
+  let newG = Math.floor(random(0, 255));
 
-//   clickedCell.setRGB(newR, newG, newB);
-// }
+  clickedCell.setRGB(newR, newG, newB);
+}
 
 function draw() {
   background(100, 100, 100, 100);
