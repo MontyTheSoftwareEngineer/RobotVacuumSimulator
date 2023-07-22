@@ -72,10 +72,22 @@ class CameraMan {
     }
   }
   /**
-   * @brief Update the position of the CameraMan based on its velocity every game tick.
+   * @brief Update the position of the CameraMan to have robot in the center of the screen
    */
   newGameTick() {
-    this.x += this.xVelocity;
-    this.y += this.yVelocity;
+    // Calculate the translation needed to center the robot on the screen
+    const canvasCenterX = window.innerWidth / 2;
+    const canvasCenterY = window.innerHeight / 2;
+    const robotCenterX = robotVacuum.x;
+    const robotCenterY = robotVacuum.y;
+    const translateX = canvasCenterX - robotCenterX;
+    const translateY = canvasCenterY - robotCenterY;
+
+    // Set cameraMan's position to follow the robot
+    cameraMan.x = robotCenterX;
+    cameraMan.y = robotCenterY;
+
+    // Translate the drawing to center the robot on the screen
+    translate(translateX, translateY);
   }
 }

@@ -8,7 +8,7 @@ class RobotVacuum {
     this.rotation = 0;
     this.rotationSpeed = 0;
     this.speed = 0;
-    this.width = 40;
+    this.width = 20;
   }
 
   setImage(image) {

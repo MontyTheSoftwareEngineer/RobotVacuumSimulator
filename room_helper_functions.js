@@ -633,5 +633,12 @@ function createWallsAndDoors() {
     closeCorners(roomIndex);
   }
 
-  currentState = "test";
+  currentState = "placeRobot";
+}
+
+function placeRobot() {
+  robotVacuum.x = rooms[0].x;
+  robotVacuum.y = rooms[0].y;
+
+  currentState = "noState";
 }
