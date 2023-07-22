@@ -22,6 +22,10 @@ class GameMap {
     this.grid.set(cellIndex, cell);
   }
 
+  addCellIndex(cellIndex, cell) {
+    this.grid.set(cellIndex, cell);
+  }
+
   /**
    * @brief Removes a cell from the game map.
    *

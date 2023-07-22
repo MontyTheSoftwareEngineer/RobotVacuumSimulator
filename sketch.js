@@ -73,7 +73,11 @@ function draw() {
   switch (currentState) {
     case "creatingRooms": {
       MakeRandomRoom();
-      if (rooms.length >= roomCount) currentState = "findCollidingRooms";
+      if (rooms.length >= roomCount) currentState = "resizeGrid";
+      break;
+    }
+    case "resizeGrid": {
+      reSizeGrid();
       break;
     }
     case "findCollidingRooms": {

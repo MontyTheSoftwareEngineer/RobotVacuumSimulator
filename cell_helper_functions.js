@@ -18,6 +18,13 @@ function index(i, j) {
   return i + j * cols;
 }
 
+function getCoordinates(index) {
+  let i = index % cols; // column index
+  let j = Math.floor(index / cols); // row index
+
+  return [i, j];
+}
+
 /**
  * @brief Helper function that returns an array of neighboring cell indexes relative to an input cell
  *

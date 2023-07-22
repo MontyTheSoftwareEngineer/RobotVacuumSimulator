@@ -39,6 +39,30 @@ function MakeRandomRoom() {
 }
 
 /**
+ * @brief Determine how the cols/rows need to be resized depending on
+ * theoretical max rows/max cols.
+ */
+function reSizeGrid() {
+  let maxCols, maxRows;
+
+  rooms.forEach((room) => {
+    maxCols += room.width;
+    maxRows += room.rows;
+  });
+
+  //how much to increase X
+  let xPansion = maxCols - cols;
+  let newCanvasWidth = cols * cellWidth;
+  //how much to increase y
+  let yPansion = maxRows - rows;
+  let newCanvasHeight = rows * cellWidth;
+
+  changeCanvasSize(newCanvasWidth, newCanvasHeight);
+
+  currentState = "findCollidingRooms";
+}
+
+/**
  * @brief Call each rooms label function in order to draw their labels.
  */
 function labelRooms() {
@@ -355,6 +379,7 @@ function closeCorners(roomIndex) {
   // );
 
   roomCorners.forEach((cell) => {
+    //gameMap.grid.get(cell).walls = [true, true, true, true];
     //console.log("Next Corner");
     for (let dir = 0; dir < 4; dir++) {
       //console.log("Checking dir: ", dir);
@@ -381,6 +406,14 @@ function closeCorners(roomIndex) {
 
       if (emptyCell) {
         gameMap.grid.get(cell).walls[dir] = true;
+        //debug
+        // let newCellCoords = getCoordinates(checkCell);
+        // console.log("empty cell coords:", newCellCoords[0], newCellCoords[1]);
+        // let newCell = new Cell(newCellCoords[0], newCellCoords[1], cellWidth);
+        // newCell.setRGB(255, 255, 255, 255);
+        // newCell.walls = [true, true, true, true];
+        // newCell.inRoom = true;
+        // gameMap.addCellIndex(checkCell, newCell);
       }
     }
   });
