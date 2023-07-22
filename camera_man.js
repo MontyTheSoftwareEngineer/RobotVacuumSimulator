@@ -23,7 +23,7 @@ class CameraMan {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.moveSpeed = 10;
+    this.moveSpeed = 2;
     this.yVelocity = 0;
     this.xVelocity = 0;
   }

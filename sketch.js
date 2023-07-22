@@ -1,16 +1,22 @@
 let cols, rows;
-const cellWidth = 20;
+const cellWidth = 42;
 const roomCount = 6;
 const cameraMan = new CameraMan();
 const gameMap = new GameMap();
 let rooms = [];
-
+let roboImg;
 let currentState = "creatingRooms";
 let roomA, roomB;
+const robotVacuum = new RobotVacuum();
 
 let currentCanvasWidth, currentCanvasHeight;
 
+function preload() {
+  roboImg = loadImage("assets/robo.png");
+}
+
 function setup() {
+  robotVacuum.setImage(roboImg);
   //setup canvas to fill screen
   createCanvas(windowWidth, windowHeight);
   currentCanvasWidth = windowWidth;
@@ -33,31 +39,60 @@ function keyPressed() {
   } else if (key === "d") {
     cameraMan.startMoving(Direction.RIGHT);
   }
+
+  if (keyCode === UP_ARROW) {
+    robotVacuum.setSpeed(-2);
+  }
+  if (keyCode === DOWN_ARROW) {
+    robotVacuum.setSpeed(2);
+  }
+  if (keyCode === LEFT_ARROW) {
+    robotVacuum.setRotation(-0.1);
+  }
+  if (keyCode === RIGHT_ARROW) {
+    robotVacuum.setRotation(0.1);
+  }
 }
 
 function keyReleased() {
   if (key === "w" || key === "s") cameraMan.stopMoving(Direction.UP);
   if (key === "a" || key === "d") cameraMan.stopMoving(Direction.RIGHT);
+  if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+    robotVacuum.setSpeed(0);
+  }
+
+  if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
+    robotVacuum.setRotation(0);
+  }
 }
 
 // //for future use
 function mouseClicked() {
   // Calculate the cell coordinates based on the mouse position
-  let cellX = Math.floor((mouseX + cameraMan.x) / cellWidth);
-  let cellY = Math.floor((mouseY + cameraMan.y) / cellWidth);
+  let cellX =
+    Math.floor(((mouseX + cameraMan.x) / cellWidth) * cellWidth) -
+    cellWidth / 2;
+  let cellY =
+    Math.floor(((mouseY + cameraMan.y) / cellWidth) * cellWidth) -
+    cellWidth / 2;
 
-  // Get the index of the clicked cell in the grid
-  let cellIndex = index(cellX, cellY);
+  robotVacuum.x = cellX;
+  robotVacuum.y = cellY;
 
-  // Access the cell object from the grid array
-  let clickedCell = gameMap.grid.get(cellIndex);
-  if (clickedCell === undefined) return;
+  // let cellX = Math.floor((mouseX + cameraMan.x) / cellWidth);
+  // let cellY = Math.floor((mouseY + cameraMan.y) / cellWidth);
+  // // Get the index of the clicked cell in the grid
+  // let cellIndex = index(cellX, cellY);
 
-  let newR = Math.floor(random(0, 255));
-  let newB = Math.floor(random(0, 255));
-  let newG = Math.floor(random(0, 255));
+  // // Access the cell object from the grid array
+  // let clickedCell = gameMap.grid.get(cellIndex);
+  // if (clickedCell === undefined) return;
 
-  clickedCell.setRGB(newR, newG, newB);
+  // let newR = Math.floor(random(0, 255));
+  // let newB = Math.floor(random(0, 255));
+  // let newG = Math.floor(random(0, 255));
+
+  // clickedCell.setRGB(newR, newG, newB);
 }
 
 function draw() {
@@ -124,4 +159,6 @@ function draw() {
   rooms.forEach((room) => {
     room.labelRoom();
   });
+
+  robotVacuum.display();
 }
