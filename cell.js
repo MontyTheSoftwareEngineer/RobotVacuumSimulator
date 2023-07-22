@@ -58,8 +58,8 @@ class Cell {
    * canvas based on the cell's position, dimensions, and color values.
    */
   display() {
-    let x = this.i * this.cellWidth;
-    let y = this.j * this.cellWidth;
+    let x = this.i * this.cellWidth - cameraMan.x;
+    let y = this.j * this.cellWidth - cameraMan.y;
 
     stroke(1);
     strokeWeight(0.5);
@@ -85,8 +85,10 @@ class Cell {
     }
 
     noStroke();
-    fill(this.r, this.g, this.b, 100);
-    rect(x, y, this.cellWidth, this.cellWidth);
+    if (this.inRoom) {
+      fill(this.r, this.g, this.b, 100);
+      rect(x, y, this.cellWidth, this.cellWidth);
+    }
 
     // let gridNum = index(this.i, this.j);
 

@@ -267,8 +267,7 @@ function centerMap() {
     nominalXStart = Math.floor((cols - mapWidth) / 2);
     console.log("nominalXStart: ", nominalXStart);
   } else {
-    //TODO: resize canvas width
-    return;
+    nominalXStart = 0;
   }
 
   //calculate where the topb most *should* start
@@ -276,8 +275,7 @@ function centerMap() {
     nominalYStart = Math.floor((rows - mapHeight) / 2);
     console.log("nominalYStart: ", nominalYStart);
   } else {
-    //TODO: resize canvas Height
-    return;
+    nominalYStart = 0;
   }
 
   //how much we should move the X by (absolute)

@@ -1,6 +1,7 @@
 let cols, rows, maxIndex;
 const cellWidth = 15;
-const roomCount = 5;
+const roomCount = 4;
+const cameraMan = new CameraMan();
 let grid = [];
 let rooms = [];
 
@@ -33,28 +34,47 @@ function setup() {
   maxIndex = rows * cols;
 }
 
-//for future use
-function mouseClicked() {
-  // Calculate the cell coordinates based on the mouse position
-  let cellX = Math.floor(mouseX / cellWidth);
-  let cellY = Math.floor(mouseY / cellWidth);
-
-  // Get the index of the clicked cell in the grid
-  let cellIndex = index(cellX, cellY);
-
-  // Access the cell object from the grid array
-  let clickedCell = grid[cellIndex];
-
-  let newR = Math.floor(random(0, 255));
-  let newB = Math.floor(random(0, 255));
-  let newG = Math.floor(random(0, 255));
-
-  clickedCell.setRGB(newR, newG, newB);
+function keyPressed() {
+  if (key === "w") {
+    cameraMan.startMoving(Direction.UP);
+  } else if (key === "a") {
+    cameraMan.startMoving(Direction.LEFT);
+  } else if (key === "s") {
+    cameraMan.startMoving(Direction.DOWN);
+  } else if (key === "d") {
+    cameraMan.startMoving(Direction.RIGHT);
+  }
 }
 
+function keyReleased() {
+  if (key === "w" || key === "s") cameraMan.stopMoving(Direction.UP);
+  if (key === "a" || key === "d") cameraMan.stopMoving(Direction.RIGHT);
+}
+
+// //for future use
+// function mouseClicked() {
+//   // Calculate the cell coordinates based on the mouse position
+//   let cellX = Math.floor(mouseX / cellWidth);
+//   let cellY = Math.floor(mouseY / cellWidth);
+
+//   // Get the index of the clicked cell in the grid
+//   let cellIndex = index(cellX, cellY);
+
+//   // Access the cell object from the grid array
+//   let clickedCell = grid[cellIndex];
+
+//   let newR = Math.floor(random(0, 255));
+//   let newB = Math.floor(random(0, 255));
+//   let newG = Math.floor(random(0, 255));
+
+//   clickedCell.setRGB(newR, newG, newB);
+// }
+
 function draw() {
-  background(220);
+  background(100, 100, 100, 100);
   frameRate(30);
+
+  cameraMan.newGameTick();
 
   //draw all cells in the game.
   grid.forEach((cell) => {

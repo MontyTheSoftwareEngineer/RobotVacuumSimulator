@@ -178,6 +178,9 @@ class Room {
     for (let i = 0; i < this.cells.length; i++) {
       grid[this.cells[i]].setRGB(22, 22, 22);
       grid[this.cells[i]].inRoom = false;
+
+      //debug
+      //grid[this.cells[i]].text = "";
     }
 
     this.cells = [];
@@ -188,8 +191,9 @@ class Room {
    */
   labelRoom() {
     // Calculate the position to draw the text centered in the room
-    let textX = Math.floor((this.x + this.width / 2) * cellWidth);
-    let textY = Math.floor((this.y + this.height / 2) * cellWidth);
+    let textX = Math.floor((this.x + this.width / 2) * cellWidth) - cameraMan.x;
+    let textY =
+      Math.floor((this.y + this.height / 2) * cellWidth) - cameraMan.y;
 
     fill(0);
     textSize(25);
@@ -211,6 +215,9 @@ class Room {
           this.cells.push(cellIndex);
           cell.setRGB(this.r, this.g, this.b, 255);
           cell.inRoom = true;
+
+          //debug
+          //cell.text = this.roomIndex;
         }
       }
     }
