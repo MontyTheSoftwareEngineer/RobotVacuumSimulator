@@ -132,9 +132,11 @@ function checkOrphanedRooms() {
     if (!hasNeighbor) {
       console.log("Found orphaned room: ", rooms[roomCount].roomIndex);
       console.log("Teleporting room");
-      if (roomCount !== 0) {
+      if (rooms[roomCount].roomIndex !== 1) {
+        console.log("Not 1");
         rooms[roomCount].teleportRoom(rooms[0].x, rooms[0].y);
       } else {
+        console.log("DD 1");
         rooms[roomCount].teleportRoom(rooms[1].x, rooms[1].y);
       }
       currentState = "separatingRooms";
@@ -230,14 +232,36 @@ function checkIslands() {
   }
 }
 
+function changeCanvasSize(newCanvasWidth, newCanvasHeight) {
+  resizeCanvas(newCanvasWidth, newCanvasHeight);
+  cols = Math.floor(newCanvasWidth / cellWidth);
+  rows = Math.floor(newCanvasHeight / cellWidth);
+  maxIndex = cols * rows;
+  grid = [];
+
+  //create all cell objects representing game map
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      let cell = new Cell(i, j, cellWidth);
+      grid.push(cell);
+    }
+  }
+
+  rooms.forEach((room) => {
+    room.maxIndex = maxIndex;
+    room.clearCells();
+    room.fillCells();
+  });
+}
+
 /**
  * @brief Centers the map onto screen
  *
  */
 function centerMap() {
-  let leftMost = 10000;
+  let leftMost = Infinity;
   let rightMost = 0;
-  let topMost = 10000;
+  let topMost = Infinity;
   let bottMost = 0;
 
   //find left,right, top, bot bounds of map
@@ -268,6 +292,12 @@ function centerMap() {
     console.log("nominalXStart: ", nominalXStart);
   } else {
     nominalXStart = 0;
+    console.log("Old Cols:", cols);
+    let xPansion = mapWidth - cols;
+    cols += xPansion;
+    console.log("New Cols:", cols);
+    let newCanvasWidth = cols * cellWidth;
+    changeCanvasSize(newCanvasWidth, currentCanvasHeight);
   }
 
   //calculate where the topb most *should* start
@@ -276,6 +306,12 @@ function centerMap() {
     console.log("nominalYStart: ", nominalYStart);
   } else {
     nominalYStart = 0;
+    console.log("Old rows:", rows);
+    let xPansion = mapHeight - rows;
+    rows += xPansion;
+    console.log("New rows:", rows);
+    let newCanvasHeight = rows * cellWidth;
+    changeCanvasSize(currentCanvasWidth, newCanvasHeight);
   }
 
   //how much we should move the X by (absolute)
