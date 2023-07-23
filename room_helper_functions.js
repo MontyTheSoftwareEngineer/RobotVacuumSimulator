@@ -633,5 +633,5 @@ function createWallsAndDoors() {
     closeCorners(roomIndex);
   }
 
-  currentState = "test";
+  currentState = "cameraControl";
 }
