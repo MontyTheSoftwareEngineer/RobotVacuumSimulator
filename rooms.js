@@ -38,6 +38,7 @@ class Room {
     this.b = b;
     this.cellWidth = cellWidth;
     this.shiftDirection = -1;
+    this.collisionWalls = [];
   }
 
   /**
@@ -158,6 +159,60 @@ class Room {
     }
 
     this.cells = [];
+  }
+
+  createCollisionWalls() {
+    let edgeCells = this.getRimCells();
+
+    edgeCells.forEach((cell) => {
+      for (let dir = 0; dir < 4; dir++) {
+        let checkCell;
+        switch (dir) {
+          case 0:
+            checkCell = cell - gameStateManager.cols;
+            break;
+          case 1:
+            checkCell = cell + 1;
+            break;
+          case 2:
+            checkCell = cell + gameStateManager.cols;
+            break;
+          case 3:
+            checkCell = cell - 1;
+            break;
+        }
+
+        let isCollisionWall = true;
+        if (this.checkHasCell(checkCell)) {
+          isCollisionWall = false;
+        }
+
+        if (gameStateManager.gameMap.isValidCellIndex(checkCell)) {
+          if (
+            JSON.stringify(
+              gameStateManager.gameMap.grid.get(checkCell).walls
+            ) === JSON.stringify([false, false, false, false])
+          )
+            isCollisionWall = false;
+        }
+
+        if (isCollisionWall) {
+          //debug
+          // gameStateManager.gameMap.grid.get(cell).walls[dir] = true;
+          // let newCellCoords = getCoordinates(checkCell);
+          // let newCell = new Cell(
+          //   newCellCoords[0],
+          //   newCellCoords[1],
+          //   this.cellWidth
+          // );
+          // newCell.setRGB(255, 255, 255, 255);
+          // newCell.walls = [true, true, true, true];
+          // newCell.inRoom = true;
+          // gameStateManager.gameMap.addCellIndex(checkCell, newCell);
+          this.collisionWalls.push(checkCell);
+        }
+      }
+    });
   }
 
   /**

@@ -22,8 +22,25 @@ class GameMap {
     this.grid.set(cellIndex, cell);
   }
 
+  /**
+   * @brief Adds a cell to the game map.
+   *
+   * @param {number} cellIndex - the 1D array number index of the cell.
+   * @param {Object} cell - The cell object to add to the map.
+   */
   addCellIndex(cellIndex, cell) {
     this.grid.set(cellIndex, cell);
+  }
+
+  /**
+   * @brief returns a bool whether or not cellIndex in question is valid.
+   *
+   * @param {number} cellIndex - the 1D array number index of the cell
+   *
+   * @return bool True if cell exists, otehrwise false.
+   */
+  isValidCellIndex(cellIndex) {
+    return this.grid.has(cellIndex);
   }
 
   /**

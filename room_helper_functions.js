@@ -398,12 +398,12 @@ function centerMap() {
  * @brief Closes corners of rooms if it leads out to empty world
  *
  */
-function closeCorners(roomIndex) {
+function closeEdges(roomIndex) {
   console.log("Closing corners on roomIndex: ", roomIndex);
   let currentRoom = gameStateManager.rooms[roomIndex];
-  let roomCorners = currentRoom.getRimCells();
+  let roomEdges = currentRoom.getRimCells();
 
-  roomCorners.forEach((cell) => {
+  roomEdges.forEach((cell) => {
     //gameMap.grid.get(cell).walls = [true, true, true, true];
     //console.log("Next Corner");
     for (let dir = 0; dir < 4; dir++) {
@@ -678,8 +678,8 @@ function createWallsAndDoors() {
     roomIndex < gameStateManager.rooms.length;
     roomIndex++
   ) {
-    closeCorners(roomIndex);
+    closeEdges(roomIndex);
   }
 
-  gameStateManager.gameState = "cameraControl";
+  gameStateManager.gameState = "createCollisionWalls";
 }

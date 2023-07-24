@@ -95,7 +95,6 @@ function keyReleased() {
 
 // //for future use
 function mouseClicked() {
-  console.log("MOUSE CLICK");
   // Calculate the cell coordinates based on the mouse position
   let cellX = Math.floor(
     ((mouseX + gameStateManager.cameraMan.x) / gameStateManager.cellWidth) *
@@ -105,6 +104,13 @@ function mouseClicked() {
     ((mouseY + gameStateManager.cameraMan.y) / gameStateManager.cellWidth) *
       gameStateManager.cellWidth
   );
+
+  let actualCellX = Math.floor(mouseX / gameStateManager.cellWidth);
+  let actualCellY = Math.floor(mouseY / gameStateManager.cellWidth);
+  if (
+    !gameStateManager.gameMap.isValidCellIndex(index(actualCellX, actualCellY))
+  )
+    return;
   gameStateManager.robotVacuum.x = cellX;
   gameStateManager.robotVacuum.y = cellY;
   gameStateManager.robotVacuum.placed = true;

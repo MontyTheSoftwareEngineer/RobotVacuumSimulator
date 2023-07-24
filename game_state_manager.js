@@ -118,9 +118,15 @@ class GameStateManager {
         break;
       }
       case "createCollisionWalls": {
+        this.rooms.forEach((room) => {
+          room.createCollisionWalls();
+        });
+
+        this.gameState = "cameraControl";
         break;
       }
       case "cameraControl": {
+        this.rooms[1].createCollisionWalls();
         this.robotVacuum.display();
       }
     }
