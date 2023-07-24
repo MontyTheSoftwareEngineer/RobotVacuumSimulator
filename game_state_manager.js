@@ -1,3 +1,11 @@
+/**
+ * @file game_state_manager.js
+ *
+ * @brief Manages the state of the game.
+ *
+ * @author Hai Pham
+ */
+
 class GameStateManager {
   constructor() {
     console.log("Game state manager init...");
@@ -27,6 +35,11 @@ class GameStateManager {
     );
   }
 
+  /**
+   * @brief Changes the size of the canvas.
+   * @param {number} newCanvasWidth - The new width of the canvas.
+   * @param {number} newCanvasHeight - The new height of the canvas.
+   */
   changeCanvasSize(newCanvasWidth, newCanvasHeight) {
     //resizeCanvas(newCanvasWidth, newCanvasHeight);
     this.cols = Math.floor(newCanvasWidth / this.cellWidth);
@@ -40,6 +53,9 @@ class GameStateManager {
     });
   }
 
+  /**
+   * @brief Performs a new game tick. Updates the game state based on the current state.
+   */
   newGameTick() {
     //draw all cells in the game.
     this.gameMap.showMap();

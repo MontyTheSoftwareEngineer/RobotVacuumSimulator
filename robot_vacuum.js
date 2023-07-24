@@ -1,9 +1,15 @@
+/**
+ * @file robot_vacuum.js
+ *
+ * @brief Represents a robot vacuum cleaner.
+ *
+ * @author Hai Pham
+ */
+
 class RobotVacuum {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.xVelocity = 0;
-    this.yVelocity = 0;
     this.robotImg;
     this.rotation = 0;
     this.rotationSpeed = 0;
@@ -12,23 +18,32 @@ class RobotVacuum {
     this.placed = false;
   }
 
+  /**
+   * @brief Sets the image for the robot vacuum.
+   * @param {Image} image - The image to be set.
+   */
   setImage(image) {
     this.robotImg = image;
   }
-
-  setYVelocity(val) {
-    console.log("Setting velocity", val);
-    this.yVelocity = val;
-  }
-
+  /**
+   * @brief Sets the rotation speed of the robot vacuum.
+   * @param {number} speed - The speed to set for rotation.
+   */
   setRotation(speed) {
     this.rotationSpeed = speed;
   }
 
+  /**
+   * @brief Sets the speed of the robot vacuum.
+   * @param {number} newSpeed - The speed to set for the robot vacuum.
+   */
   setSpeed(newSpeed) {
     this.speed = newSpeed;
   }
 
+  /**
+   * @brief updates the position of the robot vacuum based on its speed and rotation.
+   */
   updatePosition() {
     const deltaX = this.speed * Math.cos(this.rotation);
     const deltaY = this.speed * Math.sin(this.rotation);
@@ -37,6 +52,9 @@ class RobotVacuum {
     this.y += deltaY;
   }
 
+  /**
+   * @brief Displays the robot vacuum on the screen.
+   */
   display() {
     if (!this.placed) return;
     this.updatePosition();
