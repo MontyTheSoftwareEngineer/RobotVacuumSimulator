@@ -61,6 +61,7 @@ function mouseClicked() {
 }
 
 function draw() {
+  clear();
   background(100, 100, 100, 100);
   frameRate(30);
 
