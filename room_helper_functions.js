@@ -391,7 +391,6 @@ function centerMap() {
     room.fillCells();
   });
 
-  //currentState = "TODO";
   gameStateManager.gameState = "createWallsAndDoors";
 }
 
@@ -403,27 +402,6 @@ function closeCorners(roomIndex) {
   console.log("Closing corners on roomIndex: ", roomIndex);
   let currentRoom = gameStateManager.rooms[roomIndex];
   let roomCorners = currentRoom.getRimCells();
-
-  // //add topLeft Corner
-  // roomCorners.push(index(currentRoom.x, currentRoom.y));
-
-  // // //add topRightCorner
-  // roomCorners.push(
-  //   index(currentRoom.x, currentRoom.y) + (currentRoom.width - 1)
-  // );
-
-  // //add bottomRightCorner
-  // roomCorners.push(
-  //   index(
-  //     currentRoom.x + currentRoom.width - 1,
-  //     currentRoom.y + currentRoom.height - 1
-  //   )
-  // );
-
-  // //add bottomLeft Corner
-  // roomCorners.push(
-  //   index(currentRoom.x, currentRoom.y + currentRoom.height - 1)
-  // );
 
   roomCorners.forEach((cell) => {
     //gameMap.grid.get(cell).walls = [true, true, true, true];
@@ -582,7 +560,6 @@ function createWallsAndDoors() {
     //top
     let neighborCells = [];
     let topEdge = room.getTopEdge();
-    let neighboringTop = [];
     topEdge.forEach((cell) => {
       if (!visited.includes(cell))
         gameStateManager.gameMap.grid.get(cell).walls[0] = true;
@@ -591,7 +568,6 @@ function createWallsAndDoors() {
 
     //right
     let rightEdge = room.getRightEdge();
-    let neighboringRight = [];
     rightEdge.forEach((cell) => {
       if (!visited.includes(cell))
         gameStateManager.gameMap.grid.get(cell).walls[1] = true;
@@ -600,7 +576,6 @@ function createWallsAndDoors() {
 
     //bottom
     let bottomEdge = room.getBottomEdge();
-    let neighboringBottom = [];
     bottomEdge.forEach((cell) => {
       if (!visited.includes(cell))
         gameStateManager.gameMap.grid.get(cell).walls[2] = true;
@@ -609,7 +584,6 @@ function createWallsAndDoors() {
 
     //left
     let leftEdge = room.getLeftEdge();
-    let neighboringLeft = [];
     leftEdge.forEach((cell) => {
       if (!visited.includes(cell))
         gameStateManager.gameMap.grid.get(cell).walls[3] = true;

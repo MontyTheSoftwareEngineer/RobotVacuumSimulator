@@ -117,6 +117,9 @@ class GameStateManager {
         createWallsAndDoors();
         break;
       }
+      case "createCollisionWalls": {
+        break;
+      }
       case "cameraControl": {
         this.robotVacuum.display();
       }
