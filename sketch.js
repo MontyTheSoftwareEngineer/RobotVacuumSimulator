@@ -1,16 +1,23 @@
 let cols, rows;
-const cellWidth = 20;
+const cellWidth = 30;
 const roomCount = 6;
 const cameraMan = new CameraMan();
 const gameMap = new GameMap();
 let rooms = [];
+const robotVacuum = new RobotVacuum();
+let roboImg;
 
 let currentState = "creatingRooms";
 let roomA, roomB;
 
 let currentCanvasWidth, currentCanvasHeight;
 
+function preload() {
+  roboImg = loadImage("assets/robo.png");
+}
+
 function setup() {
+  robotVacuum.setImage(roboImg);
   //setup canvas to fill screen
   createCanvas(windowWidth, windowHeight);
   currentCanvasWidth = windowWidth;
@@ -42,28 +49,26 @@ function keyReleased() {
 
 // //for future use
 function mouseClicked() {
+  console.log("MOUSE CLICK");
   // Calculate the cell coordinates based on the mouse position
-  let cellX = Math.floor((mouseX + cameraMan.x) / cellWidth);
-  let cellY = Math.floor((mouseY + cameraMan.y) / cellWidth);
-
-  // Get the index of the clicked cell in the grid
-  let cellIndex = index(cellX, cellY);
-
-  // Access the cell object from the grid array
-  let clickedCell = gameMap.grid.get(cellIndex);
-  if (clickedCell === undefined) return;
-
-  let newR = Math.floor(random(0, 255));
-  let newB = Math.floor(random(0, 255));
-  let newG = Math.floor(random(0, 255));
-
-  clickedCell.setRGB(newR, newG, newB);
+  let cellX = Math.floor(((mouseX + cameraMan.x) / cellWidth) * cellWidth);
+  let cellY = Math.floor(((mouseY + cameraMan.y) / cellWidth) * cellWidth);
+  robotVacuum.x = cellX;
+  robotVacuum.y = cellY;
+  robotVacuum.placed = true;
 }
 
 function draw() {
   clear();
   background(100, 100, 100, 100);
   frameRate(30);
+
+  //draw all cells in the game.
+  gameMap.showMap();
+
+  rooms.forEach((room) => {
+    room.labelRoom();
+  });
 
   cameraMan.newGameTick();
 
@@ -118,11 +123,8 @@ function draw() {
       createWallsAndDoors();
       break;
     }
+    case "cameraControl": {
+      robotVacuum.display();
+    }
   }
-  //draw all cells in the game.
-  gameMap.showMap();
-
-  rooms.forEach((room) => {
-    room.labelRoom();
-  });
 }
