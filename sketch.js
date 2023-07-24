@@ -40,11 +40,36 @@ function keyPressed() {
   } else if (key === "d") {
     cameraMan.startMoving(Direction.RIGHT);
   }
+
+  if (robotVacuum.placed) {
+    if (keyCode === UP_ARROW) {
+      robotVacuum.setSpeed(-1);
+    }
+    if (keyCode === DOWN_ARROW) {
+      robotVacuum.setSpeed(1);
+    }
+    if (keyCode === LEFT_ARROW) {
+      robotVacuum.setRotation(-0.1);
+    }
+    if (keyCode === RIGHT_ARROW) {
+      robotVacuum.setRotation(0.1);
+    }
+  }
 }
 
 function keyReleased() {
   if (key === "w" || key === "s") cameraMan.stopMoving(Direction.UP);
   if (key === "a" || key === "d") cameraMan.stopMoving(Direction.RIGHT);
+
+  if (robotVacuum.placed) {
+    if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+      robotVacuum.setSpeed(0);
+    }
+
+    if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
+      robotVacuum.setRotation(0);
+    }
+  }
 }
 
 // //for future use
