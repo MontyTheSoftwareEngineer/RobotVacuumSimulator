@@ -58,8 +58,8 @@ class Cell {
    * canvas based on the cell's position, dimensions, and color values.
    */
   display() {
-    let x = this.i * this.cellWidth - cameraMan.x;
-    let y = this.j * this.cellWidth - cameraMan.y;
+    let x = this.i * this.cellWidth - gameStateManager.cameraMan.x;
+    let y = this.j * this.cellWidth - gameStateManager.cameraMan.y;
 
     stroke(1);
     strokeWeight(0.5);

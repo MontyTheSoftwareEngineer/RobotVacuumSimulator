@@ -34,7 +34,7 @@ class CameraMan {
    * @param direction - The direction to move the CameraMan.
    */
   startMoving(direction) {
-    if (currentState !== "cameraControl") return;
+    if (gameStateManager.gameState !== "cameraControl") return;
     switch (direction) {
       case Direction.UP:
         this.yVelocity = -this.moveSpeed;
@@ -57,7 +57,7 @@ class CameraMan {
    * @param direction - The direction to stop moving the CameraMan.
    */
   stopMoving(direction) {
-    if (currentState !== "cameraControl") return;
+    if (gameStateManager.gameState !== "cameraControl") return;
     switch (direction) {
       case Direction.UP:
         this.yVelocity = 0;

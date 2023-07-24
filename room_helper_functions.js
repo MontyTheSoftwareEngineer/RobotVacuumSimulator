@@ -14,27 +14,28 @@ function MakeRandomRoom() {
   let roomWidth = Math.floor(random(12, 20));
   let roomHeight = Math.floor(random(12, 20));
 
-  let roomX = Math.floor(cols / 2);
-  let roomY = Math.floor(rows / 2);
+  let roomX = Math.floor(gameStateManager.cols / 2);
+  let roomY = Math.floor(gameStateManager.rows / 2);
 
   let newR = Math.floor(random(0, 255));
   let newB = Math.floor(random(0, 255));
   let newG = Math.floor(random(0, 255));
 
   let room = new Room(
-    rooms.length + 1,
+    gameStateManager.rooms.length + 1,
     roomX,
     roomY,
     roomWidth,
     roomHeight,
-    cellWidth,
+    gameStateManager.cellWidth,
     newR,
     newG,
     newB
   );
   room.fillCells();
+  console.log("Made random room!");
 
-  rooms.push(room);
+  gameStateManager.rooms.push(room);
   return;
 }
 
@@ -45,21 +46,21 @@ function MakeRandomRoom() {
 function reSizeGrid() {
   let maxCols, maxRows;
 
-  rooms.forEach((room) => {
+  gameStateManager.rooms.forEach((room) => {
     maxCols += room.width;
     maxRows += room.rows;
   });
 
   //how much to increase X
-  let xPansion = maxCols - cols;
-  let newCanvasWidth = cols * cellWidth;
+  let xPansion = maxCols - gameStateManager.cols;
+  let newCanvasWidth = gameStateManager.cols * gameStateManager.cellWidth;
   //how much to increase y
-  let yPansion = maxRows - rows;
-  let newCanvasHeight = rows * cellWidth;
+  let yPansion = maxRows - gameStateManager.rows;
+  let newCanvasHeight = gameStateManager.rows * gameStateManager.cellWidth;
 
-  changeCanvasSize(newCanvasWidth, newCanvasHeight);
+  gameStateManager.changeCanvasSize(newCanvasWidth, newCanvasHeight);
 
-  currentState = "findCollidingRooms";
+  gameStateManager.gameState = "findCollidingRooms";
 }
 
 /**
@@ -95,22 +96,26 @@ function checkRoomCollision(firstRoom, secondRoom) {
  * @note if no rooms collide, set the state machine to the next state, which is labeling the rooms.
  */
 function separateRooms() {
-  for (let roomIndex = 0; roomIndex < rooms.length - 1; roomIndex++) {
-    roomA = rooms[roomIndex];
+  for (
+    let roomIndex = 0;
+    roomIndex < gameStateManager.rooms.length - 1;
+    roomIndex++
+  ) {
+    gameStateManager.roomA = gameStateManager.rooms[roomIndex];
     for (
       let nextRoomIndex = roomIndex + 1;
-      nextRoomIndex < rooms.length;
+      nextRoomIndex < gameStateManager.rooms.length;
       nextRoomIndex++
     ) {
-      roomB = rooms[nextRoomIndex];
-      if (checkRoomCollision(roomA, roomB)) {
-        currentState = "separatingRooms";
+      gameStateManager.roomB = gameStateManager.rooms[nextRoomIndex];
+      if (checkRoomCollision(gameStateManager.roomA, gameStateManager.roomB)) {
+        gameStateManager.gameState = "separatingRooms";
         return;
       }
     }
   }
 
-  currentState = "checkOrphanedRooms";
+  gameStateManager.gameState = "checkOrphanedRooms";
 }
 
 /**
@@ -118,8 +123,12 @@ function separateRooms() {
  * back into another room and set state back to separating
  */
 function checkOrphanedRooms() {
-  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
-    let roomEdges = rooms[roomCount].getRimCells();
+  for (
+    let roomCount = 0;
+    roomCount < gameStateManager.rooms.length;
+    roomCount++
+  ) {
+    let roomEdges = gameStateManager.rooms[roomCount].getRimCells();
     let neighboringCells = [];
     for (let edgeCount = 0; edgeCount < roomEdges.length; edgeCount++) {
       neighboringCells = neighboringCells.concat(
@@ -130,12 +139,16 @@ function checkOrphanedRooms() {
     let hasNeighbor = false;
     for (
       let otherRoomCount = 0;
-      otherRoomCount < rooms.length;
+      otherRoomCount < gameStateManager.rooms.length;
       otherRoomCount++
     ) {
-      //console.log("Checking against: ", rooms[otherRoomCount].roomIndex);
-      if (otherRoomCount !== roomCount && rooms[otherRoomCount]) {
-        let otherRoomEdges = rooms[otherRoomCount].getRimCells();
+      //console.log("Checking against: ", gameStateManager.rooms[otherRoomCount].roomIndex);
+      if (
+        otherRoomCount !== roomCount &&
+        gameStateManager.rooms[otherRoomCount]
+      ) {
+        let otherRoomEdges =
+          gameStateManager.rooms[otherRoomCount].getRimCells();
         hasNeighbor = neighboringCells.some((element) =>
           otherRoomEdges.includes(element)
         );
@@ -147,19 +160,28 @@ function checkOrphanedRooms() {
     }
 
     if (!hasNeighbor) {
-      console.log("Found orphaned room: ", rooms[roomCount].roomIndex);
-      if (rooms[roomCount].roomIndex !== 1) {
-        rooms[roomCount].teleportRoom(rooms[0].x, rooms[0].y);
+      console.log(
+        "Found orphaned room: ",
+        gameStateManager.rooms[roomCount].roomIndex
+      );
+      if (gameStateManager.rooms[roomCount].roomIndex !== 1) {
+        gameStateManager.rooms[roomCount].teleportRoom(
+          gameStateManager.rooms[0].x,
+          gameStateManager.rooms[0].y
+        );
       } else {
-        rooms[roomCount].teleportRoom(rooms[1].x, rooms[1].y);
+        gameStateManager.rooms[roomCount].teleportRoom(
+          gameStateManager.rooms[1].x,
+          gameStateManager.rooms[1].y
+        );
       }
-      currentState = "separatingRooms";
+      gameStateManager.gameState = "separatingRooms";
       return;
     }
   }
 
   console.log("No orphaned rooms!");
-  currentState = "checkIslands";
+  gameStateManager.gameState = "checkIslands";
 }
 
 /**
@@ -174,7 +196,11 @@ function checkIslands() {
   let unvisitedRooms = []; // array to track which rooms we've seen so far
   let nextRoomsToCheck = []; // stack/array to track next nodes
 
-  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
+  for (
+    let roomCount = 0;
+    roomCount < gameStateManager.rooms.length;
+    roomCount++
+  ) {
     unvisitedRooms.push(roomCount);
   }
   console.log("Checking for islands, rooms in map: ", unvisitedRooms);
@@ -186,7 +212,10 @@ function checkIslands() {
   while (nextRoomsToCheck.length > 0) {
     let currentCheckingRoom = nextRoomsToCheck[0];
 
-    console.log("Checking room: ", rooms[currentCheckingRoom].roomIndex);
+    console.log(
+      "Checking room: ",
+      gameStateManager.rooms[currentCheckingRoom].roomIndex
+    );
 
     unvisitedRooms.splice(unvisitedRooms.indexOf(currentCheckingRoom), 1);
     nextRoomsToCheck.splice(0, 1);
@@ -195,7 +224,7 @@ function checkIslands() {
 
     //get all edges of current room and then populate neighboringCells with all cells
     //that would be considered neighbors based off the edges.
-    let roomEdges = rooms[currentCheckingRoom].getRimCells();
+    let roomEdges = gameStateManager.rooms[currentCheckingRoom].getRimCells();
     let neighboringCells = [];
     for (let edgeCount = 0; edgeCount < roomEdges.length; edgeCount++) {
       neighboringCells = neighboringCells.concat(
@@ -207,14 +236,15 @@ function checkIslands() {
     //search all rooms in room map to see if they're a neighbor
     for (
       let otherRoomCount = 0;
-      otherRoomCount < rooms.length;
+      otherRoomCount < gameStateManager.rooms.length;
       otherRoomCount++
     ) {
       if (
         otherRoomCount !== currentCheckingRoom && //don't check the current room to see if it's a neighbor of itself
         unvisitedRooms.includes(otherRoomCount) //don't check rooms if it's already been seen before
       ) {
-        let otherRoomEdges = rooms[otherRoomCount].getRimCells();
+        let otherRoomEdges =
+          gameStateManager.rooms[otherRoomCount].getRimCells();
         hasNeighbor = neighboringCells.some((element) =>
           otherRoomEdges.includes(element)
         );
@@ -224,7 +254,10 @@ function checkIslands() {
           !nextRoomsToCheck.includes(otherRoomCount) && //don't need to put the room onto checkStack if it's already there
           unvisitedRooms.includes(otherRoomCount) //don't need to add room onto checkStack if we've already visited the room
         ) {
-          console.log("Found neighbor: ", rooms[otherRoomCount].roomIndex);
+          console.log(
+            "Found neighbor: ",
+            gameStateManager.rooms[otherRoomCount].roomIndex
+          );
           nextRoomsToCheck.push(otherRoomCount);
           console.log("Next rooms to check: ", nextRoomsToCheck);
         }
@@ -237,28 +270,18 @@ function checkIslands() {
     for (let roomCount = 0; roomCount < unvisitedRooms.length; roomCount++) {
       //we should be able to teleport island cluster rooms to room 0 coords since
       //room 0 is our starting check room and should always be considered "safe"
-      rooms[unvisitedRooms[roomCount]].teleportRoom(rooms[0].x, rooms[0].y);
+      gameStateManager.rooms[unvisitedRooms[roomCount]].teleportRoom(
+        gameStateManager.rooms[0].x,
+        gameStateManager.rooms[0].y
+      );
 
-      currentState = "separatingRooms";
+      gameStateManager.gameState = "separatingRooms";
     }
   } else {
     console.log("No island clusters found!");
     //currentState = "pause";
-    currentState = "centerRooms";
+    gameStateManager.gameState = "centerRooms";
   }
-}
-
-function changeCanvasSize(newCanvasWidth, newCanvasHeight) {
-  //resizeCanvas(newCanvasWidth, newCanvasHeight);
-  cols = Math.floor(newCanvasWidth / cellWidth);
-  rows = Math.floor(newCanvasHeight / cellWidth);
-  currentCanvasHeight = newCanvasHeight;
-  currentCanvasWidth = newCanvasWidth;
-
-  rooms.forEach((room) => {
-    room.clearCells();
-    room.fillCells();
-  });
 }
 
 /**
@@ -272,19 +295,37 @@ function centerMap() {
   let bottMost = 0;
 
   //find left,right, top, bot bounds of map
-  for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
-    if (rooms[roomCount].x < leftMost) leftMost = rooms[roomCount].x;
+  for (
+    let roomCount = 0;
+    roomCount < gameStateManager.rooms.length;
+    roomCount++
+  ) {
+    if (gameStateManager.rooms[roomCount].x < leftMost)
+      leftMost = gameStateManager.rooms[roomCount].x;
 
-    if (rooms[roomCount].x + rooms[roomCount].width > rightMost)
-      rightMost = rooms[roomCount].x + rooms[roomCount].width;
+    if (
+      gameStateManager.rooms[roomCount].x +
+        gameStateManager.rooms[roomCount].width >
+      rightMost
+    )
+      rightMost =
+        gameStateManager.rooms[roomCount].x +
+        gameStateManager.rooms[roomCount].width;
 
-    if (rooms[roomCount].y + rooms[roomCount].height > bottMost)
-      bottMost = rooms[roomCount].y + rooms[roomCount].height;
+    if (
+      gameStateManager.rooms[roomCount].y +
+        gameStateManager.rooms[roomCount].height >
+      bottMost
+    )
+      bottMost =
+        gameStateManager.rooms[roomCount].y +
+        gameStateManager.rooms[roomCount].height;
 
-    if (rooms[roomCount].y < topMost) topMost = rooms[roomCount].y;
+    if (gameStateManager.rooms[roomCount].y < topMost)
+      topMost = gameStateManager.rooms[roomCount].y;
   }
 
-  console.log("Canvas:", cols, rows);
+  console.log("Canvas:", gameStateManager.cols, gameStateManager.rows);
   console.log("Centering map", leftMost, rightMost, topMost, bottMost);
 
   let mapWidth = rightMost - leftMost;
@@ -294,27 +335,33 @@ function centerMap() {
   let nominalXStart, nominalYStart;
 
   //calculate where the left most *should* start
-  if (mapWidth < cols) {
-    nominalXStart = Math.floor((cols - mapWidth) / 2);
+  if (mapWidth < gameStateManager.cols) {
+    nominalXStart = Math.floor((gameStateManager.cols - mapWidth) / 2);
     console.log("nominalXStart: ", nominalXStart);
   } else {
     nominalXStart = 0;
-    let xPansion = mapWidth - cols;
-    cols += xPansion;
-    let newCanvasWidth = cols * cellWidth;
-    changeCanvasSize(newCanvasWidth, currentCanvasHeight);
+    let xPansion = mapWidth - gameStateManager.cols;
+    gameStateManager.cols += xPansion;
+    let newCanvasWidth = gameStateManager.cols * gameStateManager.cellWidth;
+    gameStateManager.changeCanvasSize(
+      newCanvasWidth,
+      gameStateManager.currentCanvasHeight
+    );
   }
 
   //calculate where the topb most *should* start
-  if (mapHeight < rows) {
-    nominalYStart = Math.floor((rows - mapHeight) / 2);
+  if (mapHeight < gameStateManager.rows) {
+    nominalYStart = Math.floor((gameStateManager.rows - mapHeight) / 2);
     console.log("nominalYStart: ", nominalYStart);
   } else {
     nominalYStart = 0;
-    let xPansion = mapHeight - rows;
-    rows += xPansion;
-    let newCanvasHeight = rows * cellWidth;
-    changeCanvasSize(currentCanvasWidth, newCanvasHeight);
+    let xPansion = mapHeight - gameStateManager.rows;
+    gameStateManager.rows += xPansion;
+    let newCanvasHeight = gameStateManager.rows * gameStateManager.cellWidth;
+    gameStateManager.changeCanvasSize(
+      gameStateManager.currentCanvasWidth,
+      newCanvasHeight
+    );
   }
 
   //how much we should move the X by (absolute)
@@ -337,15 +384,15 @@ function centerMap() {
   console.log("Moving X " + (xShiftFactor > 0 ? "Right" : "Left"));
   console.log("Moving Y " + (yShiftFactor > 0 ? "Down" : "Up"));
 
-  rooms.forEach((room) => {
+  gameStateManager.rooms.forEach((room) => {
     room.teleportRoom(room.x + xShiftFactor, room.y + yShiftFactor);
   });
-  rooms.forEach((room) => {
+  gameStateManager.rooms.forEach((room) => {
     room.fillCells();
   });
 
   //currentState = "TODO";
-  currentState = "createWallsAndDoors";
+  gameStateManager.gameState = "createWallsAndDoors";
 }
 
 /**
@@ -354,7 +401,7 @@ function centerMap() {
  */
 function closeCorners(roomIndex) {
   console.log("Closing corners on roomIndex: ", roomIndex);
-  let currentRoom = rooms[roomIndex];
+  let currentRoom = gameStateManager.rooms[roomIndex];
   let roomCorners = currentRoom.getRimCells();
 
   // //add topLeft Corner
@@ -386,13 +433,13 @@ function closeCorners(roomIndex) {
       let checkCell;
       switch (dir) {
         case 0:
-          checkCell = cell - cols;
+          checkCell = cell - gameStateManager.cols;
           break;
         case 1:
           checkCell = cell + 1;
           break;
         case 2:
-          checkCell = cell + cols;
+          checkCell = cell + gameStateManager.cols;
           break;
         case 3:
           checkCell = cell - 1;
@@ -400,12 +447,12 @@ function closeCorners(roomIndex) {
       }
 
       let emptyCell = true;
-      rooms.forEach((room) => {
+      gameStateManager.rooms.forEach((room) => {
         if (room.checkHasCell(checkCell) && room.roomIndex) emptyCell = false;
       });
 
       if (emptyCell) {
-        gameMap.grid.get(cell).walls[dir] = true;
+        gameStateManager.gameMap.grid.get(cell).walls[dir] = true;
         //debug
         // let newCellCoords = getCoordinates(checkCell);
         // console.log("empty cell coords:", newCellCoords[0], newCellCoords[1]);
@@ -454,13 +501,13 @@ function createEntryFromShared(
     //other side of the entry point we create does not get a wall created on it.
     switch (wallDir) {
       case 0: //top
-        entryPairCell = randomDoor - cols;
+        entryPairCell = randomDoor - gameStateManager.cols;
         break;
       case 1:
         entryPairCell = randomDoor + 1;
         break;
       case 2:
-        entryPairCell = randomDoor + cols;
+        entryPairCell = randomDoor + gameStateManager.cols;
         break;
       case 3:
         entryPairCell = randomDoor - 1;
@@ -472,15 +519,21 @@ function createEntryFromShared(
     //that lead outside of the map, so we want to ensure the entry pair cell
     //is actually valid (inside map)
     let isValidEntryPair = false;
-    rooms.forEach((room) => {
+    gameStateManager.rooms.forEach((room) => {
       if (room.getRimCells().includes(entryPairCell)) isValidEntryPair = true;
     });
 
     if (isValidEntryPair) {
       //track which room pairs we've created entries for so that we limit the number
       //of entries to 1
-      let lowerRoomNum = roomA < roomB ? roomA : roomB;
-      let upperRoomNum = roomA < roomB ? roomB : roomA;
+      let lowerRoomNum =
+        gameStateManager.roomA < gameStateManager.roomB
+          ? gameStateManager.roomA
+          : gameStateManager.roomB;
+      let upperRoomNum =
+        roomA < gameStateManager.roomB
+          ? gameStateManager.roomB
+          : gameStateManager.roomA;
       roomConnectionsCompleted.push([lowerRoomNum, upperRoomNum]);
       // let r = Math.floor(Math.random() * 255);
       // let g = Math.floor(Math.random() * 255);
@@ -489,7 +542,12 @@ function createEntryFromShared(
       visited.push(randomDoor);
       visited.push(entryPairCell);
 
-      gameMap.grid.get(entryPairCell).walls = [false, false, false, false];
+      gameStateManager.gameMap.grid.get(entryPairCell).walls = [
+        false,
+        false,
+        false,
+        false,
+      ];
 
       //debug
       // gameMap.grid.get(randomDoor).setRGB(r, g, b);
@@ -499,7 +557,7 @@ function createEntryFromShared(
 
       sharedCells.forEach((targetCell) => {
         if (targetCell !== randomDoor && !visited.includes(targetCell)) {
-          gameMap.grid.get(targetCell).walls[wallDir] = true;
+          gameStateManager.gameMap.grid.get(targetCell).walls[wallDir] = true;
         }
       });
     }
@@ -515,14 +573,19 @@ function createWallsAndDoors() {
 
   let visited = [];
   let roomConnectionsCompleted = [];
-  for (let currentRoom = 0; currentRoom < rooms.length; currentRoom++) {
-    let room = rooms[currentRoom];
+  for (
+    let currentRoom = 0;
+    currentRoom < gameStateManager.rooms.length;
+    currentRoom++
+  ) {
+    let room = gameStateManager.rooms[currentRoom];
     //top
     let neighborCells = [];
     let topEdge = room.getTopEdge();
     let neighboringTop = [];
     topEdge.forEach((cell) => {
-      if (!visited.includes(cell)) gameMap.grid.get(cell).walls[0] = true;
+      if (!visited.includes(cell))
+        gameStateManager.gameMap.grid.get(cell).walls[0] = true;
       neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
@@ -530,7 +593,8 @@ function createWallsAndDoors() {
     let rightEdge = room.getRightEdge();
     let neighboringRight = [];
     rightEdge.forEach((cell) => {
-      if (!visited.includes(cell)) gameMap.grid.get(cell).walls[1] = true;
+      if (!visited.includes(cell))
+        gameStateManager.gameMap.grid.get(cell).walls[1] = true;
       neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
@@ -538,7 +602,8 @@ function createWallsAndDoors() {
     let bottomEdge = room.getBottomEdge();
     let neighboringBottom = [];
     bottomEdge.forEach((cell) => {
-      if (!visited.includes(cell)) gameMap.grid.get(cell).walls[2] = true;
+      if (!visited.includes(cell))
+        gameStateManager.gameMap.grid.get(cell).walls[2] = true;
       neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
@@ -546,12 +611,17 @@ function createWallsAndDoors() {
     let leftEdge = room.getLeftEdge();
     let neighboringLeft = [];
     leftEdge.forEach((cell) => {
-      if (!visited.includes(cell)) gameMap.grid.get(cell).walls[3] = true;
+      if (!visited.includes(cell))
+        gameStateManager.gameMap.grid.get(cell).walls[3] = true;
       neighborCells = neighborCells.concat(getNeighboringCellIndexes(cell));
     });
 
-    for (let roomCount = 0; roomCount < rooms.length; roomCount++) {
-      if (rooms[roomCount].roomIndex !== room.roomIndex) {
+    for (
+      let roomCount = 0;
+      roomCount < gameStateManager.rooms.length;
+      roomCount++
+    ) {
+      if (gameStateManager.rooms[roomCount].roomIndex !== room.roomIndex) {
         let lowerCheckRoomNum =
           currentRoom < roomCount ? currentRoom : roomCount;
         let upperCheckRoomNum =
@@ -568,7 +638,7 @@ function createWallsAndDoors() {
         }
 
         let sharedCells = [];
-        let otherRoom = rooms[roomCount];
+        let otherRoom = gameStateManager.rooms[roomCount];
         let otherRoomTop = otherRoom.getTopEdge();
         let otherRoomRight = otherRoom.getRightEdge();
         let otherRoomLeft = otherRoom.getLeftEdge();
@@ -629,9 +699,13 @@ function createWallsAndDoors() {
     }
   }
 
-  for (let roomIndex = 0; roomIndex < rooms.length; roomIndex++) {
+  for (
+    let roomIndex = 0;
+    roomIndex < gameStateManager.rooms.length;
+    roomIndex++
+  ) {
     closeCorners(roomIndex);
   }
 
-  currentState = "cameraControl";
+  gameStateManager.gameState = "cameraControl";
 }

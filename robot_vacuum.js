@@ -44,7 +44,10 @@ class RobotVacuum {
 
     push();
 
-    translate(this.x - cameraMan.x, this.y - cameraMan.y);
+    translate(
+      this.x - gameStateManager.cameraMan.x,
+      this.y - gameStateManager.cameraMan.y
+    );
 
     rotate(this.rotation);
 

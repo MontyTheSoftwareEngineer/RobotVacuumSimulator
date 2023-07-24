@@ -95,7 +95,7 @@ class Room {
     let ret = [];
 
     for (let i = 0; i < this.height; i++) {
-      ret.push(index(this.x, this.y) + i * cols);
+      ret.push(index(this.x, this.y) + i * gameStateManager.cols);
     }
 
     return ret;
@@ -108,7 +108,9 @@ class Room {
     let ret = [];
 
     for (let i = 0; i < this.height; i++) {
-      ret.push(index(this.x, this.y) + i * cols + (this.width - 1));
+      ret.push(
+        index(this.x, this.y) + i * gameStateManager.cols + (this.width - 1)
+      );
     }
 
     return ret;
@@ -121,7 +123,9 @@ class Room {
     let ret = [];
 
     for (let i = 0; i < this.width; i++) {
-      ret.push(index(this.x, this.y) + i + (this.height - 1) * cols);
+      ret.push(
+        index(this.x, this.y) + i + (this.height - 1) * gameStateManager.cols
+      );
     }
 
     return ret;
@@ -147,7 +151,7 @@ class Room {
    */
   clearCells() {
     for (let i = 0; i < this.cells.length; i++) {
-      gameMap.removeCell(this.cells[i]);
+      gameStateManager.gameMap.removeCell(this.cells[i]);
 
       //debug
       //grid[this.cells[i]].text = "";
@@ -161,9 +165,12 @@ class Room {
    */
   labelRoom() {
     // Calculate the position to draw the text centered in the room
-    let textX = Math.floor((this.x + this.width / 2) * cellWidth) - cameraMan.x;
+    let textX =
+      Math.floor((this.x + this.width / 2) * this.cellWidth) -
+      gameStateManager.cameraMan.x;
     let textY =
-      Math.floor((this.y + this.height / 2) * cellWidth) - cameraMan.y;
+      Math.floor((this.y + this.height / 2) * this.cellWidth) -
+      gameStateManager.cameraMan.y;
 
     fill(0);
     textSize(25);
@@ -181,10 +188,10 @@ class Room {
       for (let j = 0; j < this.height; j++) {
         let cellIndex = index(this.x + i, this.y + j);
         this.cells.push(cellIndex);
-        let newCell = new Cell(this.x + i, this.y + j, cellWidth);
+        let newCell = new Cell(this.x + i, this.y + j, this.cellWidth);
         newCell.inRoom = true;
         newCell.setRGB(this.r, this.g, this.b, 255);
-        gameMap.addCell(newCell);
+        gameStateManager.gameMap.addCell(newCell);
       }
     }
     this.labelRoom();

@@ -15,12 +15,12 @@
  * @return The 1D index representation of (i,j)
  */
 function index(i, j) {
-  return i + j * cols;
+  return i + j * gameStateManager.cols;
 }
 
 function getCoordinates(index) {
-  let i = index % cols; // column index
-  let j = Math.floor(index / cols); // row index
+  let i = index % gameStateManager.cols; // column index
+  let j = Math.floor(index / gameStateManager.cols); // row index
 
   return [i, j];
 }
@@ -40,11 +40,11 @@ function getNeighboringCellIndexes(inputCellIndex) {
   neighboringCells.push(inputCellIndex + 1);
 
   //cell above
-  let cellAbove = inputCellIndex - cols;
+  let cellAbove = inputCellIndex - gameStateManager.cols;
   if (cellAbove > 0) neighboringCells.push(cellAbove);
 
   //cell above
-  let cellBelow = inputCellIndex + cols;
+  let cellBelow = inputCellIndex + gameStateManager.cols;
   neighboringCells.push(cellBelow);
 
   return neighboringCells;
